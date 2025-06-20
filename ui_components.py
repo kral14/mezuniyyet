@@ -1,4 +1,4 @@
-# ui_components.py (Son dərəcə stabil təqvim vidceti ilə)
+# ui_components.py (Donma problemi həll edilmiş stabil versiya)
 
 import tkinter as tk
 from tkinter import ttk, Toplevel
@@ -35,7 +35,6 @@ class CustomDateEntry(ttk.Frame):
     Fokus itməsi problemi yoxdur və ay/il seçimi daha asandır.
     """
     def __init__(self, parent, **kwargs):
-        # İstifadəçinin göndərdiyi formatı (məs, dd.mm.Y) emal edirik
         user_pattern = kwargs.pop('date_pattern', 'dd.mm.%Y')
         self.strptime_pattern = user_pattern.replace('dd', '%d').replace('mm', '%m').replace('Y', '%Y').replace('y', '%y')
         self.calendar_pattern = user_pattern.replace('%d', 'dd').replace('%m', 'mm').replace('%Y', 'yyyy').replace('%y', 'yy')
@@ -58,7 +57,6 @@ class CustomDateEntry(ttk.Frame):
             return
 
         self._is_calendar_open = True
-
         self._calendar_popup = Toplevel(self)
         self._calendar_popup.transient(self)
         self._calendar_popup.overrideredirect(True)
@@ -80,14 +78,11 @@ class CustomDateEntry(ttk.Frame):
         self._calendar_popup.geometry(f'+{x}+{y}')
         
         self.cal.bind("<<CalendarSelected>>", self._on_date_select)
-        self._calendar_popup.bind("<FocusOut>", self._on_focus_out)
         self._calendar_popup.bind("<Escape>", lambda e: self._destroy_calendar_popup())
         
-        self._calendar_popup.grab_set()
-
-    def _on_focus_out(self, event=None):
-        """Təqvimdən kənara kliklədikdə onu bağlayır."""
-        self._destroy_calendar_popup()
+        # --- ƏSAS DƏYİŞİKLİK BURADADIR ---
+        # "grab_set" və "FocusOut" əvəzinə "wait_window" istifadə edirik
+        self.wait_window(self._calendar_popup)
 
     def _on_date_select(self, event=None):
         """Tarix seçildikdə dəyəri yeniləyir və təqvimi bağlayır."""
@@ -97,7 +92,6 @@ class CustomDateEntry(ttk.Frame):
     def _destroy_calendar_popup(self):
         """Təqvim pəncərəsini təhlükəsiz şəkildə məhv edir."""
         if hasattr(self, '_calendar_popup') and self._calendar_popup.winfo_exists():
-            self._calendar_popup.grab_release()
             self._calendar_popup.destroy()
         self._is_calendar_open = False
 

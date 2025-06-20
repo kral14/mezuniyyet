@@ -1,4 +1,4 @@
-# app.py (Düzəldilmiş sessiya məntiqi ilə)
+# app.py (Pəncərə başlığında versiya göstərilməsi ilə)
 
 import tkinter as tk
 from tkinter import messagebox
@@ -55,11 +55,6 @@ class App(tk.Tk):
                 user_id, name, _, role = user_data_tuple
                 self.current_user = {"id": user_id, "name": name, "role": role}
                 
-                # === DÜZƏLİŞ BURADADIR ===
-                # Avtomatik giriş zamanı _on_login_success çağırılmamalıdır,
-                # çünki "remember_me" seçimi yoxdur. Birbaşa əsas səhifəyə keçirik.
-                # self._on_login_success() # <-- BU SƏTİR SİLİNİR VƏ YA ŞƏRHƏ ALINIR
-                
                 self._show_main_app_frame()
                 return
 
@@ -72,7 +67,6 @@ class App(tk.Tk):
         if self.remember_me_choice:
             config["last_username"] = self.current_user['username_for_login']
         elif "last_username" in config:
-            # Əgər "Məni xatırla" seçilməyibsə, yadda saxlanılan adı silirik
             del config["last_username"]
         self._save_config(config)
     
@@ -81,8 +75,6 @@ class App(tk.Tk):
         config = self._load_config()
         if "session_user_id" in config:
             del config["session_user_id"]
-        # "Məni xatırla" seçimi aktiv deyilsə, istifadəçi adını da silirik
-        # Bu məntiqi gələcəkdə əlavə etmək olar, hələlik sadə saxlayaq.
         self._save_config(config)
         self._show_login_frame()
 
@@ -105,7 +97,9 @@ class App(tk.Tk):
     
     def _show_main_app_frame(self):
         self._clear_frame()
-        self.title("Məzuniyyət İdarəetmə Sistemi"); self.geometry("1100x700"); self.resizable(True, True); self.minsize(900, 600)
+        # === DƏYİŞİKLİK BURADADIR ===
+        self.title(f"Məzuniyyət İdarəetmə Sistemi v{self.version_info['current']}")
+        self.geometry("1100x700"); self.resizable(True, True); self.minsize(900, 600)
         self._current_frame = MainAppFrame(self, self.current_user, self.version_info, self._on_logout)
         self._current_frame.pack(expand=True, fill="both")
 
