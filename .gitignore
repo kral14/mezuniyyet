@@ -1,0 +1,62 @@
+# # # # # # # # # # # # # # # # # # # # # # # # #
+# Standart Python .gitignore Faylı                   #
+# # # # # # # # # # # # # # # # # # # # # # # # #
+
+# Virtual Environment (Sanal Mühit)
+# Proyektin asılılıqlarını saxlayan qovluqlar. Əsla Git-ə göndərilməməlidir.
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Python cache faylları
+# Python'un sürət üçün avtomatik yaratdığı müvəqqəti fayllar.
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Konfiqurasiya Faylları (ƏN ÖNƏMLİ!)
+# Şifrələr, API açarları və istifadəçiyə xas ayarları saxlayan fayllar.
+config.ini
+config.json
+
+# Log Faylları
+# Proqramın işləməsi zamanı yaranan loglar və xəta qeydləri.
+*.log
+logs/
+
+# Veritabanı Faylları
+# Lokal SQLite və ya digər baza faylları.
+*.db
+*.sqlite
+*.sqlite3
+
+# Əməliyyat Sisteminin Yaratdığı Fayllar
+# Windows, macOS və Linux-un avtomatik yaratdığı sistem faylları.
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE və Editor Ayarları
+# Kod redaktorlarının (VSCode, PyCharm, Sublime) proyektə xas ayar faylları.
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Paketləmə və Paylama Qovluqları
+# Proqramın .exe və ya digər distributable versiyalarını saxlayan qovluqlar.
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Test Nəticələri və Hesabatları
+.pytest_cache/
+.tox/
+.coverage
+htmlcov/
