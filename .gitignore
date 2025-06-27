@@ -60,3 +60,5 @@ build/
 .tox/
 .coverage
 htmlcov/
+# Build/inşa faylları və nəticələri
+*.spec
