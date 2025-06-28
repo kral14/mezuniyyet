@@ -1,0 +1,9 @@
+# Python-a aid müvəqqəti fayllar
+__pycache__/
+*.pyc
+
+# Konfiqurasiya faylı (sessiya məlumatları və s. üçün)
+config.json
+
+# Əməliyyat sisteminə aid fayllar
+.DS_Store

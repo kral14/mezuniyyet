@@ -1,0 +1,29 @@
+2025-06-26 12:28:23,801 - ERROR - Gözlənilməz xəta baş verdi! - [app.py:136]
+Traceback (most recent call last):
+  File "c:\Users\nesib\Desktop\mezuniyyet-main\app.py", line 133, in <module>
+    app = MainApplication()
+  File "c:\Users\nesib\Desktop\mezuniyyet-main\app.py", line 69, in __init__
+    self._initialize_frames()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\nesib\Desktop\mezuniyyet-main\app.py", line 76, in _initialize_frames
+    frame = F(self.container, self)
+TypeError: LoginFrame.__init__() missing 1 required positional argument: 'register_callback'
+2025-06-26 12:33:44,752 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:129]
+2025-06-26 12:38:59,527 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:151]
+2025-06-26 12:39:03,949 - INFO - 'murad' üçün daxil olma cəhdi. - [app.py:88]
+2025-06-26 12:39:05,229 - INFO - İstifadəçi 'MURAD' (user) sistemə daxil oldu. - [app.py:135]
+2025-06-26 12:39:12,133 - INFO - İstifadəçi 'MURAD' sistemdən çıxdı. - [app.py:140]
+2025-06-26 12:39:19,389 - INFO - 'admin' üçün daxil olma cəhdi. - [app.py:88]
+2025-06-26 12:39:20,253 - INFO - İstifadəçi 'Admin' (admin) sistemə daxil oldu. - [app.py:135]
+2025-06-26 12:42:23,496 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:155]
+2025-06-26 12:42:33,968 - INFO - 'admin' üçün daxil olma cəhdi. - [app.py:84]
+2025-06-26 12:42:36,469 - WARNING - 'admin' üçün uğursuz daxil olma cəhdi. - [app.py:100]
+2025-06-26 12:42:41,624 - INFO - 'admin' üçün daxil olma cəhdi. - [app.py:84]
+2025-06-26 12:42:42,483 - INFO - İstifadəçi 'Admin' (admin) sistemə daxil oldu. - [app.py:128]
+2025-06-26 12:42:43,155 - INFO - Ən son versiya yoxlanıldı: 3.9. Cari versiya: 3.8 - [app.py:135]
+2025-06-26 12:42:59,853 - DEBUG - Starting new HTTPS connection (1): api.github.com:443 - [connectionpool.py:1049]
+2025-06-26 12:43:00,318 - DEBUG - https://api.github.com:443 "GET /repos/kral14/mezuniyyet/releases/latest HTTP/1.1" 200 815 - [connectionpool.py:544]
+2025-06-26 12:43:00,321 - DEBUG - Starting new HTTPS connection (1): github.com:443 - [connectionpool.py:1049]
+2025-06-26 12:43:01,111 - DEBUG - https://github.com:443 "GET /kral14/mezuniyyet/releases/download/v3.9/Mezuniyyet_Setup_v3.9.exe HTTP/1.1" 302 0 - [connectionpool.py:544]
+2025-06-26 12:43:01,114 - DEBUG - Starting new HTTPS connection (1): objects.githubusercontent.com:443 - [connectionpool.py:1049]
+2025-06-26 12:43:01,736 - DEBUG - https://objects.githubusercontent.com:443 "GET /github-production-release-asset-2e65be/1005249270/ed4c64eb-0d6d-4049-9cca-235bce98b480?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=releaseassetproduction%2F20250626%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250626T084301Z&X-Amz-Expires=1800&X-Amz-Signature=018f41eb93bc2d07c49bccef21d411668867d38cae9591592ca3ce90bd52ec9b&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3DMezuniyyet_Setup_v3.9.exe&response-content-type=application%2Foctet-stream HTTP/1.1" 200 16750131 - [connectionpool.py:544]

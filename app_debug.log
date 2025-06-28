@@ -1,0 +1,125 @@
+2025-06-26 12:24:02,983 - INFO - app.py:30 - T\u0259tbiq ba\u015flad\u0131l\u0131r... (Application starting...)
+2025-06-26 12:24:02,983 - INFO - app.py:55 - Ba\u015flan\u011f\u0131c yoxlan\u0131l\u0131r... (Handling startup...)
+2025-06-26 12:24:02,983 - DEBUG - app.py:60 - Sessiya istifad\u0259\xe7i ID-si tap\u0131ld\u0131: 4 (Session user ID found)
+2025-06-26 12:24:03,647 - INFO - app.py:65 - \u0130stifad\u0259\xe7i Admin avtomatik olaraq daxil oldu. (User Admin logged in automatically.)
+2025-06-26 12:24:03,647 - INFO - app.py:116 - \u018fsas proqram p\u0259nc\u0259r\u0259si g\xf6st\u0259rilir. (Showing main app frame.)
+2025-06-26 12:24:14,455 - DEBUG - connectionpool.py:1049 - Starting new HTTPS connection (1): api.github.com:443
+2025-06-26 12:24:14,924 - DEBUG - connectionpool.py:544 - https://api.github.com:443 "GET /repos/kral14/mezuniyyet/releases/latest HTTP/1.1" 200 815
+2025-06-26 12:24:14,928 - DEBUG - connectionpool.py:1049 - Starting new HTTPS connection (1): github.com:443
+2025-06-26 12:24:15,407 - DEBUG - connectionpool.py:544 - https://github.com:443 "GET /kral14/mezuniyyet/releases/download/v3.9/Mezuniyyet_Setup_v3.9.exe HTTP/1.1" 302 0
+2025-06-26 12:24:15,409 - DEBUG - connectionpool.py:1049 - Starting new HTTPS connection (1): objects.githubusercontent.com:443
+2025-06-26 12:24:16,192 - DEBUG - connectionpool.py:544 - https://objects.githubusercontent.com:443 "GET /github-production-release-asset-2e65be/1005249270/ed4c64eb-0d6d-4049-9cca-235bce98b480?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=releaseassetproduction%2F20250626%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250626T082415Z&X-Amz-Expires=1800&X-Amz-Signature=94e43348aa394f0168035cdcdfa4548ef3326132d232a2cb8f91b413b4f1275d&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3DMezuniyyet_Setup_v3.9.exe&response-content-type=application%2Foctet-stream HTTP/1.1" 200 16750131
+2025-06-26 12:28:04,693 - INFO - app.py:84 - \u0130stifad\u0259\xe7i Admin sistemd\u0259n \xe7\u0131x\u0131r. (User logging out.)
+2025-06-26 12:28:04,694 - DEBUG - app.py:93 - M\xf6vcud p\u0259nc\u0259r\u0259 t\u0259mizl\u0259nir. (Clearing current frame.)
+2025-06-26 12:28:04,700 - INFO - app.py:101 - Giri\u015f p\u0259nc\u0259r\u0259si g\xf6st\u0259rilir. (Showing login frame.)
+2025-06-26 12:28:10,196 - INFO - app.py:121 - 'admin' \xfc\xe7\xfcn giri\u015f c\u0259hdi. (Login attempt for 'admin'.)
+2025-06-26 12:28:11,046 - INFO - app.py:74 - Giri\u015f u\u011furlu. Konfiqurasiya yadda saxlan\u0131l\u0131r... (Login successful. Saving config...)
+2025-06-26 12:28:11,046 - DEBUG - app.py:93 - M\xf6vcud p\u0259nc\u0259r\u0259 t\u0259mizl\u0259nir. (Clearing current frame.)
+2025-06-26 12:28:11,050 - INFO - app.py:116 - \u018fsas proqram p\u0259nc\u0259r\u0259si g\xf6st\u0259rilir. (Showing main app frame.)
+2025-06-26 12:49:04,707 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:173]
+2025-06-26 12:49:14,209 - INFO - 'admin' üçün daxil olma cəhdi. - [app.py:96]
+2025-06-26 12:49:15,062 - INFO - İstifadəçi 'Admin' (admin) sistemə daxil oldu. - [app.py:148]
+2025-06-26 12:49:15,714 - INFO - Ən son versiya yoxlanıldı: 3.9. Cari versiya: 3.8 - [app.py:154]
+2025-06-26 12:49:26,713 - DEBUG - Starting new HTTPS connection (1): api.github.com:443 - [connectionpool.py:1049]
+2025-06-26 12:49:27,167 - DEBUG - https://api.github.com:443 "GET /repos/kral14/mezuniyyet/releases/latest HTTP/1.1" 200 815 - [connectionpool.py:544]
+2025-06-26 12:49:27,171 - DEBUG - Starting new HTTPS connection (1): github.com:443 - [connectionpool.py:1049]
+2025-06-26 12:49:27,656 - DEBUG - https://github.com:443 "GET /kral14/mezuniyyet/releases/download/v3.9/Mezuniyyet_Setup_v3.9.exe HTTP/1.1" 302 0 - [connectionpool.py:544]
+2025-06-26 12:49:27,658 - DEBUG - Starting new HTTPS connection (1): objects.githubusercontent.com:443 - [connectionpool.py:1049]
+2025-06-26 12:49:28,271 - DEBUG - https://objects.githubusercontent.com:443 "GET /github-production-release-asset-2e65be/1005249270/ed4c64eb-0d6d-4049-9cca-235bce98b480?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=releaseassetproduction%2F20250626%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250626T084928Z&X-Amz-Expires=1800&X-Amz-Signature=90d291789e9f03cc8a60807cf869315c2c9075df9f57e9a02a595236d6589836&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3DMezuniyyet_Setup_v3.9.exe&response-content-type=application%2Foctet-stream HTTP/1.1" 200 16750131 - [connectionpool.py:544]
+2025-06-26 20:18:10,141 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:173]
+2025-06-26 20:18:36,632 - INFO - 'admin' üçün daxil olma cəhdi. - [app.py:96]
+2025-06-26 20:18:37,464 - INFO - İstifadəçi 'Admin' (admin) sistemə daxil oldu. - [app.py:148]
+2025-06-26 20:18:38,138 - INFO - Ən son versiya yoxlanıldı: 4.1. Cari versiya: 4.1 - [app.py:154]
+2025-06-26 21:11:32,971 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:173]
+2025-06-26 21:11:43,636 - INFO - 'murad' üçün daxil olma cəhdi. - [app.py:96]
+2025-06-26 21:11:44,462 - INFO - İstifadəçi 'MURAD' (user) sistemə daxil oldu. - [app.py:148]
+2025-06-26 21:11:45,119 - INFO - Ən son versiya yoxlanıldı: 4.1. Cari versiya: 4.1 - [app.py:154]
+2025-06-26 21:15:16,571 - INFO - İstifadəçi 'MURAD' sistemdən çıxdı. - [app.py:162]
+2025-06-26 21:15:26,190 - INFO - 'elnare' üçün daxil olma cəhdi. - [app.py:96]
+2025-06-26 21:15:27,045 - INFO - İstifadəçi 'BABAYEVA ELNAR' (user) sistemə daxil oldu. - [app.py:148]
+2025-06-26 21:15:27,717 - INFO - Ən son versiya yoxlanıldı: 4.1. Cari versiya: 4.1 - [app.py:154]
+2025-06-26 21:20:40,984 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:173]
+2025-06-26 21:20:50,207 - INFO - 'murad' üçün daxil olma cəhdi. - [app.py:96]
+2025-06-26 21:20:51,038 - INFO - İstifadəçi 'MURAD' (user) sistemə daxil oldu. - [app.py:148]
+2025-06-26 21:20:51,715 - INFO - Ən son versiya yoxlanıldı: 4.1. Cari versiya: 4.1 - [app.py:154]
+2025-06-26 21:21:00,313 - INFO - 'murad' üçün daxil olma cəhdi. - [app.py:96]
+2025-06-26 21:21:01,150 - INFO - İstifadəçi 'MURAD' (user) sistemə daxil oldu. - [app.py:148]
+2025-06-26 21:21:01,806 - INFO - Ən son versiya yoxlanıldı: 4.1. Cari versiya: 4.1 - [app.py:154]
+2025-06-26 21:22:54,009 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:173]
+2025-06-26 21:22:59,307 - INFO - 'murad' üçün daxil olma cəhdi. - [app.py:96]
+2025-06-26 21:23:00,137 - INFO - İstifadəçi 'MURAD' (user) sistemə daxil oldu. - [app.py:148]
+2025-06-26 21:23:00,824 - INFO - Ən son versiya yoxlanıldı: 4.1. Cari versiya: 4.1 - [app.py:154]
+2025-06-26 21:29:55,607 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:173]
+2025-06-26 21:30:05,297 - INFO - 'murad' üçün daxil olma cəhdi. - [app.py:96]
+2025-06-26 21:30:06,134 - INFO - İstifadəçi 'MURAD' (user) sistemə daxil oldu. - [app.py:148]
+2025-06-26 21:30:06,816 - INFO - Ən son versiya yoxlanıldı: 4.1. Cari versiya: 4.1 - [app.py:154]
+2025-06-26 21:31:58,296 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:173]
+2025-06-26 21:32:03,736 - INFO - 'murad' üçün daxil olma cəhdi. - [app.py:96]
+2025-06-26 21:32:04,548 - INFO - İstifadəçi 'MURAD' (user) sistemə daxil oldu. - [app.py:148]
+2025-06-26 21:32:05,202 - INFO - Ən son versiya yoxlanıldı: 4.1. Cari versiya: 4.1 - [app.py:154]
+2025-06-26 21:39:00,406 - ERROR - Gözlənilməz xəta baş verdi! - [app.py:188]
+Traceback (most recent call last):
+  File "c:\Users\nesib\OneDrive\Masaüstü\mezuniyyet-main\app.py", line 185, in <module>
+    app = MainApplication()
+  File "c:\Users\nesib\OneDrive\Masaüstü\mezuniyyet-main\app.py", line 59, in __init__
+    current_version = self.version_info.get("current", "")
+                      ^^^^^^^^^^^^^^^^^
+  File "C:\Users\nesib\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 2546, in __getattr__
+    return getattr(self.tk, attr)
+AttributeError: '_tkinter.tkapp' object has no attribute 'version_info'
+2025-06-26 21:40:25,146 - ERROR - Gözlənilməz xəta baş verdi! - [app.py:91]
+Traceback (most recent call last):
+  File "c:\Users\nesib\OneDrive\Masaüstü\mezuniyyet-main\app.py", line 88, in <module>
+    app = MainApplication()
+  File "c:\Users\nesib\OneDrive\Masaüstü\mezuniyyet-main\app.py", line 83, in __init__
+    self._initialize_frames()
+    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nesib\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 2546, in __getattr__
+    return getattr(self.tk, attr)
+AttributeError: '_tkinter.tkapp' object has no attribute '_initialize_frames'
+2025-06-26 21:40:45,505 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:173]
+2025-06-26 21:41:01,232 - INFO - 'murad' üçün daxil olma cəhdi. - [app.py:96]
+2025-06-26 21:41:02,061 - INFO - İstifadəçi 'MURAD' (user) sistemə daxil oldu. - [app.py:148]
+2025-06-26 21:41:02,712 - INFO - Ən son versiya yoxlanıldı: 4.1. Cari versiya: 4.1 - [app.py:154]
+2025-06-26 21:41:27,145 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:163]
+2025-06-26 21:41:32,105 - INFO - 'murad' üçün daxil olma cəhdi. - [app.py:87]
+2025-06-26 21:41:32,923 - INFO - İstifadəçi 'MURAD' (user) sistemə daxil oldu. - [app.py:138]
+2025-06-26 21:41:33,571 - INFO - Ən son versiya yoxlanıldı: 4.1. Cari versiya: 4.1 - [app.py:144]
+2025-06-26 21:44:23,838 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:163]
+2025-06-26 21:44:29,684 - INFO - 'murad' üçün daxil olma cəhdi. - [app.py:87]
+2025-06-26 21:44:30,515 - INFO - İstifadəçi 'MURAD' (user) sistemə daxil oldu. - [app.py:138]
+2025-06-26 21:44:31,175 - INFO - Ən son versiya yoxlanıldı: 4.1. Cari versiya: 4.1 - [app.py:144]
+2025-06-27 01:17:52,454 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:191]
+2025-06-27 01:18:00,470 - INFO - 'admin' üçün daxil olma cəhdi. - [app.py:108]
+2025-06-27 01:18:01,295 - INFO - İstifadəçi 'Admin' (admin) sistemə daxil oldu. - [app.py:173]
+2025-06-27 01:18:22,871 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:191]
+2025-06-27 01:18:27,202 - INFO - 'admin' üçün daxil olma cəhdi. - [app.py:108]
+2025-06-27 01:18:28,012 - INFO - İstifadəçi 'Admin' (admin) sistemə daxil oldu. - [app.py:173]
+2025-06-27 01:19:24,242 - INFO - İstifadəçi 'Admin' sistemdən çıxdı. - [app.py:178]
+2025-06-27 01:19:32,164 - INFO - 'admin' üçün daxil olma cəhdi. - [app.py:108]
+2025-06-27 01:19:32,991 - INFO - İstifadəçi 'Admin' (admin) sistemə daxil oldu. - [app.py:173]
+2025-06-27 01:46:59,997 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:190]
+2025-06-27 01:47:05,545 - INFO - 'admin' üçün daxil olma cəhdi. - [app.py:105]
+2025-06-27 01:47:07,810 - INFO - İstifadəçi 'Admin' (admin) sistemə daxil oldu. Sessiya ID: 07920e20-87bd-4233-98d6-b99f41d35830 - [app.py:167]
+2025-06-27 01:51:17,270 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:190]
+2025-06-27 01:51:20,830 - INFO - 'admin' üçün daxil olma cəhdi. - [app.py:105]
+2025-06-27 01:53:31,402 - INFO - 'admin' üçün daxil olma cəhdi. - [app.py:105]
+2025-06-27 01:54:49,694 - INFO - 'admin' üçün daxil olma cəhdi. - [app.py:105]
+2025-06-27 01:54:51,941 - INFO - İstifadəçi 'Admin' (admin) sistemə daxil oldu. Sessiya ID: c3ed2fd3-0ed9-44d6-b4b0-53554ed95ff6 - [app.py:167]
+2025-06-27 01:57:28,498 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:190]
+2025-06-27 01:57:33,219 - INFO - 'admin' üçün daxil olma cəhdi. - [app.py:105]
+2025-06-27 01:57:35,455 - INFO - İstifadəçi 'Admin' (admin) sistemə daxil oldu. Sessiya ID: 611b83db-61bf-4756-ab25-0ecb28d662f7 - [app.py:167]
+2025-06-27 01:57:47,452 - INFO - 'admin' üçün daxil olma cəhdi. - [app.py:105]
+2025-06-27 01:57:49,831 - INFO - İstifadəçi 'Admin' (admin) sistemə daxil oldu. Sessiya ID: 67cbb8ac-6cc7-47f2-bf2a-5ad78b234598 - [app.py:167]
+2025-06-27 01:57:57,459 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:190]
+2025-06-27 01:58:02,053 - INFO - 'admin' üçün daxil olma cəhdi. - [app.py:105]
+2025-06-27 01:58:04,308 - INFO - İstifadəçi 'Admin' (admin) sistemə daxil oldu. Sessiya ID: f0a237e3-4751-4853-83ec-b46250b33343 - [app.py:167]
+2025-06-27 01:58:31,082 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:190]
+2025-06-27 01:58:59,660 - INFO - 'admin' üçün daxil olma cəhdi. - [app.py:105]
+2025-06-27 01:59:01,889 - INFO - İstifadəçi 'Admin' (admin) sistemə daxil oldu. Sessiya ID: 4e71cd43-f877-467d-9017-d6af26087ad4 - [app.py:167]
+2025-06-27 02:02:10,299 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:190]
+2025-06-27 02:02:18,000 - INFO - 'admin' üçün daxil olma cəhdi. - [app.py:105]
+2025-06-27 02:02:20,331 - INFO - İstifadəçi 'Admin' (admin) sistemə daxil oldu. Sessiya ID: 45ca283d-ede5-4c4b-8540-80673c070cba - [app.py:167]
+2025-06-27 02:06:08,083 - INFO - Verilənlər bazasına uğurla qoşuldu. - [app.py:190]
+2025-06-27 02:06:15,228 - INFO - 'admin' üçün daxil olma cəhdi. - [app.py:105]
+2025-06-27 02:06:17,504 - INFO - İstifadəçi 'Admin' (admin) sistemə daxil oldu. Sessiya ID: b876ed34-b1a3-4b83-b66f-347ac3be6339 - [app.py:167]
