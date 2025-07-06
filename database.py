@@ -1,4 +1,4 @@
-# database.py (Tam və Yekun Versiya)
+# database.py (Giriş Tarixçəsi funksiyası əlavə edilmiş tam versiya)
 
 import psycopg2
 import bcrypt
@@ -420,3 +420,62 @@ def get_latest_version():
     finally:
         if conn: conn.close()
     return version
+
+# --- GİRİŞ TARİXÇƏSİ FUNKSİYALARI (YENİ ƏLAVƏ OLUNUB) ---
+
+def record_login(user_id):
+    """Yeni giriş qeydi yaradır və həmin qeydin ID-sini qaytarır."""
+    conn = db_connect()
+    if not conn: return None
+    history_id = None
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO login_history (user_id) VALUES (%s) RETURNING id",
+                (user_id,)
+            )
+            result = cur.fetchone()
+            if result:
+                history_id = result[0]
+            conn.commit()
+    except psycopg2.Error as e:
+        # Xətanı log faylına yazdırmaq daha yaxşı olar, amma hələlik print edirik
+        print(f"Giriş tarixçəsi yazılarkən xəta: {e}")
+    finally:
+        if conn: conn.close()
+    return history_id
+
+def record_logout(history_id):
+    """Verilən ID-li giriş qeydi üçün çıxış vaxtını yeniləyir."""
+    if not history_id: return
+    conn = db_connect()
+    if not conn: return
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "UPDATE login_history SET logout_time = CURRENT_TIMESTAMP WHERE id = %s",
+                (history_id,)
+            )
+            conn.commit()
+    except psycopg2.Error as e:
+        print(f"Çıxış tarixçəsi yenilənərkən xəta: {e}")
+    finally:
+        if conn: conn.close()
+
+def get_login_history(user_id):
+    """İstifadəçinin giriş-çıxış tarixçəsini gətirir."""
+    conn = db_connect()
+    if not conn: return []
+    history = []
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT login_time, logout_time FROM login_history WHERE user_id = %s ORDER BY login_time DESC",
+                (user_id,)
+            )
+            history = cur.fetchall()
+    except psycopg2.Error as e:
+        messagebox.showerror("Baza Xətası", f"Tarixçə oxunarkən xəta: \n{e}")
+    finally:
+        if conn: conn.close()
+    return history

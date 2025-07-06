@@ -1,4 +1,4 @@
-# main_app_window.py (Tam və Düzəldilmiş Yekun Versiya)
+# main_app_window.py (Giriş Tarixçəsi düyməsi və pəncərəsi əlavə edilmiş tam versiya)
 
 import tkinter as tk
 from tkinter import ttk, messagebox, Toplevel
@@ -94,7 +94,7 @@ class MainAppFrame(ttk.Frame):
                     session_text = f" ({active_sessions})"
                 display_name = f"{indicator} {name}{session_text}"
             else:
-                color = "#808080"
+                color = "#808080" # Solğun rəng
                 display_name = f"{indicator} {name}"
             
             self.employee_listbox.insert(tk.END, display_name)
@@ -130,16 +130,68 @@ class MainAppFrame(ttk.Frame):
         is_admin = self.current_user['role'].strip() == 'admin'
         title_bar = ttk.Frame(self.header_container); title_bar.pack(fill='x', pady=(5,0))
         ttk.Label(title_bar, text=selected_name, font=("Helvetica", 18, "bold")).pack(side='left', anchor='w')
+        
+        # Adminlər üçün düymələr sağda toplanır
+        admin_buttons_frame = ttk.Frame(title_bar)
+        admin_buttons_frame.pack(side='right', anchor='e')
+        
         if is_admin:
+            # YENİ "Giriş Tarixçəsi" DÜYMƏSİ BURADA ƏLAVƏ OLUNUB
+            ttk.Button(admin_buttons_frame, text="Giriş Tarixçəsi", command=lambda: self.open_login_history_window(info['db_id'])).pack(side='left', padx=(0, 5))
+            
             user_id = info['db_id']; is_user_active = info.get("is_active", True)
             toggle_text = "Deaktiv Et" if is_user_active else "Aktiv Et"
-            ttk.Button(title_bar, text=toggle_text, command=lambda: self.toggle_user_activity(user_id, not is_user_active)).pack(side='right', anchor='e')
-        
+            ttk.Button(admin_buttons_frame, text=toggle_text, command=lambda: self.toggle_user_activity(user_id, not is_user_active)).pack(side='left')
+
         self.show_summary_panel(self.header_container, info)
         ttk.Button(self.header_container, text=f"✚ Yeni Məzuniyyət Əlavə Et", command=lambda: self.toggle_vacation_panel(show=True, employee_name=selected_name)).pack(pady=10)
         
         self.tree_frame = VacationTreeView(self.tree_area_frame, self, info, self.current_user, self.load_and_refresh_data)
         self.tree_frame.pack(expand=True, fill='both'); self.tree_frame.lower()
+
+    def open_login_history_window(self, employee_id):
+        history_window = Toplevel(self)
+        history_window.title("Giriş-Çıxış Tarixçəsi")
+        history_window.geometry("550x450")
+        history_window.transient(self)
+        history_window.grab_set()
+
+        tree_frame = ttk.Frame(history_window, padding=10)
+        tree_frame.pack(expand=True, fill='both')
+
+        columns = ('login', 'logout')
+        tree = ttk.Treeview(tree_frame, columns=columns, show='headings')
+        
+        vsb = ttk.Scrollbar(tree_frame, orient="vertical", command=tree.yview)
+        hsb = ttk.Scrollbar(tree_frame, orient="horizontal", command=tree.xview)
+        tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
+
+        tree.heading('login', text='Daxil Olma Vaxtı')
+        tree.heading('logout', text='Çıxış Vaxtı')
+
+        tree.column('login', width=220, anchor='center')
+        tree.column('logout', width=220, anchor='center')
+        
+        vsb.pack(side='right', fill='y')
+        hsb.pack(side='bottom', fill='x')
+        tree.pack(side='left', expand=True, fill='both')
+
+        login_data = database.get_login_history(employee_id)
+
+        if not login_data:
+            tree.destroy()
+            vsb.destroy()
+            hsb.destroy()
+            ttk.Label(tree_frame, text="Bu istifadəçi üçün giriş tarixçəsi tapılmadı.", font=("Helvetica", 12)).pack(pady=20)
+        else:
+            for item in tree.get_children():
+                tree.delete(item)
+            for login_time, logout_time in login_data:
+                login_str = login_time.strftime('%d.%m.%Y %H:%M:%S') if login_time else "Məlumat yoxdur"
+                logout_str = logout_time.strftime('%d.%m.%Y %H:%M:%S') if logout_time else "Hələ çıxış etməyib"
+                tree.insert('', 'end', values=(login_str, logout_str))
+
+        self._center_toplevel(history_window)
 
     def open_edit_employee_window(self, is_new=False):
         old_name = None
