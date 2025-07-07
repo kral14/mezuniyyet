@@ -22,7 +22,8 @@ from .vacation_queries import (
     update_vacation,
     update_vacation_status,
     delete_vacation,
-    toggle_vacation_activity
+    toggle_vacation_activity,
+    get_all_active_vacations # YENİ ƏLAVƏ EDİLƏN SƏTİR
 )
 
 from .session_queries import (

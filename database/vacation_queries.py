@@ -138,3 +138,31 @@ def toggle_vacation_activity(vac_id, new_status, admin_name):
     finally:
         if conn:
             conn.close()
+# ... (faylın əvvəlindəki digər funksiyalar olduğu kimi qalır) ...
+
+def get_all_active_vacations():
+    """Arxivə salınmamış bütün aktiv məzuniyyətləri gətirir."""
+    conn = db_connect()
+    if not conn: return []
+    vacations = []
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT v.employee_id, e.name, v.start_date, v.end_date 
+                FROM vacations v
+                JOIN employees e ON v.employee_id = e.id
+                WHERE v.is_archived = FALSE AND v.status = 'approved' AND v.is_inactive = FALSE
+            """)
+            for row in cur.fetchall():
+                vacations.append({
+                    'employee_id': row[0],
+                    'employee': row[1],
+                    'start_date': row[2],
+                    'end_date': row[3]
+                })
+        return vacations
+    except Exception as e:
+        messagebox.showerror("Baza Xətası", f"Bütün məzuniyyətlər alınarkən xəta baş verdi:\n{e}")
+        return []
+    finally:
+        if conn: conn.close()
