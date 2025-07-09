@@ -225,3 +225,42 @@ AttributeError: '_tkinter.tkapp' object has no attribute '_initialize_frames'
 2025-07-06 18:08:45,402 - DEBUG - https://github.com:443 "GET /kral14/mezuniyyet/releases/download/v4.3/MezuniyyetSistemi_Setup_v4.3.exe HTTP/1.1" 302 0 - [connectionpool.py:544]
 2025-07-06 18:08:45,405 - DEBUG - Starting new HTTPS connection (1): objects.githubusercontent.com:443 - [connectionpool.py:1049]
 2025-07-06 18:08:46,178 - DEBUG - https://objects.githubusercontent.com:443 "GET /github-production-release-asset-2e65be/1005249270/80ebf889-14e9-4d52-9642-c79b72051dba?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=releaseassetproduction%2F20250706%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250706T140844Z&X-Amz-Expires=1800&X-Amz-Signature=f3d9a0a7a1a74b3ae4f0dde9d482cbea57ee0a5ac112a16f5375db3b216b6321&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3DMezuniyyetSistemi_Setup_v4.3.exe&response-content-type=application%2Foctet-stream HTTP/1.1" 200 18615280 - [connectionpool.py:544]
+2025-07-08 17:38:35,648 - ERROR - Giriş xətası: Traceback (most recent call last):
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 173, in attempt_login
+    self.show_main_app_frame()
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 204, in show_main_app_frame
+    main_frame = MainAppFrame(self.container, self.current_user, self.version_info, self.logout)
+  File "c:\Users\nesib\Desktop\mezuniyyet github\ui\main_frame.py", line 32, in __init__
+    self.main_font = self.master.main_font
+                     ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Frame' object has no attribute 'main_font'
+ - [app.py:178]
+2025-07-09 10:22:55,130 - ERROR - Giriş xətası: Traceback (most recent call last):
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 173, in attempt_login
+    self.show_main_app_frame()
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 204, in show_main_app_frame
+    main_frame = MainAppFrame(self.container, self.current_user, self.version_info, self.logout)
+  File "c:\Users\nesib\Desktop\mezuniyyet github\ui\main_frame.py", line 51, in __init__
+    self._create_vacation_panel()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\nesib\Desktop\mezuniyyet github\ui\main_frame.py", line 479, in _create_vacation_panel
+    self.panel_start_cal = CustomDateEntry(form_body, date_pattern='dd.mm.yyyy', font_name=self.main_font)
+                           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\nesib\Desktop\mezuniyyet github\ui_components.py", line 35, in __init__
+    super().__init__(parent, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\tkinter\ttk.py", line 720, in __init__
+    Widget.__init__(self, master, "ttk::frame", kw)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\tkinter\ttk.py", line 534, in __init__
+    tkinter.Widget.__init__(self, master, widgetname, kw=kw)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\tkinter\__init__.py", line 2774, in __init__
+    self.tk.call(
+    ~~~~~~~~~~~~^
+        (widgetName, self._w) + extra + self._options(cnf))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_tkinter.TclError: unknown option "-font_name"
+ - [app.py:178]

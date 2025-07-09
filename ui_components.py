@@ -1,16 +1,19 @@
+# ui_components.py (Yekun Düzəliş Edilmiş Versiya)
+
 import tkinter as tk
 from tkinter import ttk, Toplevel
 from datetime import datetime, date, timedelta
 import calendar
 
-# Tooltip sinifi olduğu kimi qalır
 class Tooltip:
-    def __init__(self, widget, text):
+    def __init__(self, widget, text, font_name="Segoe UI"):
         self.widget = widget
         self.text = text
         self.tooltip_window = None
-        self.widget.bind("<Enter>", self.show_tooltip)
-        self.widget.bind("<Leave>", self.hide_tooltip)
+        self.font_name = font_name
+        self.widget.bind("<Enter>", self.show_tooltip, add='+')
+        self.widget.bind("<Leave>", self.hide_tooltip, add='+')
+        
     def show_tooltip(self, event):
         if self.tooltip_window or not self.text: return
         x, y, _, _ = self.widget.bbox("insert")
@@ -19,8 +22,11 @@ class Tooltip:
         self.tooltip_window = Toplevel(self.widget)
         self.tooltip_window.wm_overrideredirect(True)
         self.tooltip_window.wm_geometry(f"+{x}+{y}")
-        label = tk.Label(self.tooltip_window, text=self.text, justify='left', background="#ffffe0", relief='solid', borderwidth=1, font=("tahoma", "8", "normal"))
+        label = tk.Label(self.tooltip_window, text=self.text, justify='left', 
+                         background="#ffffe0", relief='solid', borderwidth=1, 
+                         font=(self.font_name, 8, "normal"))
         label.pack(ipadx=1)
+
     def hide_tooltip(self, event):
         if self.tooltip_window:
             self.tooltip_window.destroy()
@@ -28,24 +34,24 @@ class Tooltip:
 
 
 class CustomDateEntry(ttk.Frame):
-    """
-    Tarix xanasına kliklədikdə də açılan yekun versiya.
-    """
-    def __init__(self, parent, date_pattern='dd.mm.yyyy', **kwargs):
+    def __init__(self, parent, date_pattern='dd.mm.yyyy', font_name="Segoe UI", **kwargs):
+        # DÜZƏLİŞ: `font_name` kwargs-dan çıxarılır ki, super().__init__-ə ötürülməsin
+        if 'font_name' in kwargs:
+            del kwargs['font_name']
+
         super().__init__(parent, **kwargs)
         
+        self.main_font = font_name
         self.date_var = tk.StringVar()
         self.strftime_pattern = date_pattern.replace('dd', '%d').replace('mm', '%m').replace('yyyy', '%Y')
         self._calendar_win = None
 
-        self.entry = ttk.Entry(self, textvariable=self.date_var, state="readonly", justify='center', width=18, cursor="hand2")
+        self.entry = ttk.Entry(self, textvariable=self.date_var, state="readonly", justify='center', width=18, cursor="hand2", font=(self.main_font, 9))
         self.button = ttk.Button(self, text="📅", command=self._open_calendar, width=3)
         
         self.entry.pack(side="left", fill="x", expand=True)
         self.button.pack(side="left", padx=(2,0))
         
-        # --- DƏYİŞİKLİK BURADADIR ---
-        # Tarix xanasına (Entry) klikləmə hadisəsini təqvim açma funksiyasına bağlayırıq.
         self.entry.bind("<Button-1>", self._open_calendar)
         
         self.set_date(date.today())
@@ -56,20 +62,15 @@ class CustomDateEntry(ttk.Frame):
 
         win = Toplevel(self)
         self._calendar_win = win
-        
-        # İstəyə bağlı çərçivəsiz görünüş üçün bu sətri kommentdən çıxara bilərsiniz
-        # win.overrideredirect(True)
-        
         win.transient(self)
         win.grab_set()
         win.resizable(False, False)
-        if not win.overrideredirect():
-            win.title("Tarix Seçin")
+        win.title("Tarix Seçin")
 
         style = ttk.Style(win)
-        style.configure("Today.TButton", font=("tahoma", 9, "bold"), foreground="#007bff")
+        style.configure("Today.TButton", font=(self.main_font, 9, "bold"), foreground="#007bff")
         style.configure("Weekend.TButton", foreground="red")
-        style.configure("Weekday.TLabel", foreground="gray")
+        style.configure("Weekday.TLabel", foreground="gray", font=(self.main_font, 9))
 
         main_frame = ttk.Frame(win, style="Card.TFrame", relief="solid", borderwidth=1)
         main_frame.pack(padx=1, pady=1)
@@ -123,13 +124,13 @@ class CustomDateEntry(ttk.Frame):
             self.date_var.set(selected.strftime(self.strftime_pattern))
             close_calendar()
 
-        header_frame = ttk.Frame(main_frame, style="Card.TFrame")
+        header_frame = ttk.Frame(main_frame)
         header_frame.pack(pady=5, padx=5, fill='x')
         ttk.Button(header_frame, text="<", width=3, command=lambda: change_month(-1)).pack(side='left')
-        month_year_label = ttk.Label(header_frame, style="Card.TLabel", width=18, anchor='center', font=("tahoma", 10, "bold"))
+        month_year_label = ttk.Label(header_frame, width=18, anchor='center', font=(self.main_font, 10, "bold"))
         month_year_label.pack(side='left', expand=True, fill='x')
         ttk.Button(header_frame, text=">", width=3, command=lambda: change_month(1)).pack(side='left')
-        body_frame = ttk.Frame(main_frame, style="Card.TFrame")
+        body_frame = ttk.Frame(main_frame)
         body_frame.pack(padx=10, pady=(0, 10))
         update_calendar_display()
         
@@ -138,25 +139,18 @@ class CustomDateEntry(ttk.Frame):
 
         win.update_idletasks()
         main_app_win = self.winfo_toplevel()
-        win_width = win.winfo_width()
-        win_height = win.winfo_height()
-        app_x = main_app_win.winfo_x()
-        app_y = main_app_win.winfo_y()
-        app_width = main_app_win.winfo_width()
-        app_height = main_app_win.winfo_height()
-        x = app_x + (app_width // 2) - (win_width // 2)
-        y = app_y + (app_height // 2) - (win_height // 2)
+        x = self.winfo_x() + main_app_win.winfo_x()
+        y = self.winfo_y() + main_app_win.winfo_y() + self.entry.winfo_height()
         win.geometry(f'+{x}+{y}')
 
     def get_date(self):
         try: return datetime.strptime(self.date_var.get(), self.strftime_pattern).date()
-        except (ValueError, TypeError): return date.today()
+        except (ValueError, TypeError): return None
 
     def set_date(self, new_date):
         if isinstance(new_date, (date, datetime)): self.date_var.set(new_date.strftime(self.strftime_pattern))
         elif isinstance(new_date, str): self.date_var.set(new_date)
 
-# --- Qalan funksiyalar olduğu kimi qalır ---
 def mezuniyyet_muddetini_hesabla(baslama_str, bitme_str):
     try:
         baslama_tarixi = datetime.strptime(baslama_str, '%Y-%m-%d').date()

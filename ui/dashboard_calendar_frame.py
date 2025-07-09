@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import calendar
 from datetime import datetime, date, timedelta
-import random
 import database
 from ui_components import Tooltip
 
@@ -12,6 +11,7 @@ class DashboardCalendarFrame(ttk.Frame):
         self.main_app_ref = main_app_ref
         self.current_user = main_app_ref.current_user
         self.is_admin = self.current_user['role'].strip() == 'admin'
+        self.main_font = main_app_ref.main_font
         
         self.current_date = datetime.now()
         self.colors = ["#a0c4ff", "#caffbf", "#fdffb6", "#ffd6a5", "#ffadad", "#bdb2ff", "#9bf6ff", "#ffc6ff"]
@@ -21,7 +21,7 @@ class DashboardCalendarFrame(ttk.Frame):
         
     def create_widgets(self):
         notebook = ttk.Notebook(self)
-        notebook.pack(expand=True, fill='both')
+        notebook.pack(expand=True, fill='both', padx=5, pady=5)
 
         dashboard_tab = ttk.Frame(notebook, padding=10)
         notebook.add(dashboard_tab, text='📊 İdarə Paneli')
@@ -33,14 +33,18 @@ class DashboardCalendarFrame(ttk.Frame):
 
     def load_data(self):
         """Məlumatları bazadan yükləyir və komponentləri yeniləyir."""
-        self.vacations = database.get_all_active_vacations()
-        
-        unique_employees = sorted(list({vac['employee'] for vac in self.vacations}))
-        for i, emp in enumerate(unique_employees):
-            self.employee_colors[emp] = self.colors[i % len(self.colors)]
-        
-        self.update_dashboard_data()
-        self.update_calendar()
+        try:
+            self.vacations = database.get_all_active_vacations()
+            
+            unique_employees = sorted(list({vac['employee'] for vac in self.vacations}))
+            for i, emp in enumerate(unique_employees):
+                self.employee_colors[emp] = self.colors[i % len(self.colors)]
+            
+            self.update_dashboard_data()
+            self.update_calendar()
+        except Exception as e:
+            messagebox.showerror("Məlumat Yükləmə Xətası", f"Dashboard məlumatları yüklənərkən xəta baş verdi:\n{e}", parent=self)
+
 
     def create_dashboard_widgets(self, parent_frame):
         parent_frame.columnconfigure((0, 1, 2), weight=1)
@@ -67,7 +71,7 @@ class DashboardCalendarFrame(ttk.Frame):
 
         # Bu gün məzuniyyətdə olanlar
         today = date.today()
-        on_vacation_today = [v for v in self.vacations if v['start_date'] <= today <= v['end_date']]
+        on_vacation_today = [v for v in self.vacations if v.get('start_date') and v.get('end_date') and v['start_date'] <= today <= v['end_date']]
         for widget in self.on_vacation_card.winfo_children(): widget.destroy()
         self.on_vacation_card.config(text=f"Bu Gün Məzuniyyətdə ({len(on_vacation_today)})")
         for vac in on_vacation_today:
@@ -75,14 +79,14 @@ class DashboardCalendarFrame(ttk.Frame):
             link.pack(fill='x', padx=10, pady=2)
             link.bind("<Button-1>", lambda e, v=vac: self.main_app_ref.show_employee_by_id(v['employee_id']))
 
-        # Gözləyən sorğular (bunun üçün database-də yeni funksiya lazımdır, hələlik boş qalır)
+        # Gözləyən sorğular (bu funksiya database-də yaradılmalıdır)
         # pending_requests = database.get_pending_requests() ...
         
     def create_calendar_widgets(self, parent_frame):
         header_frame = ttk.Frame(parent_frame)
         header_frame.pack(fill='x', pady=(0, 10))
         ttk.Button(header_frame, text="<", command=lambda: self.change_month(-1)).pack(side='left')
-        self.month_year_label = ttk.Label(header_frame, text="", font=("Helvetica", 16, "bold"), anchor='center')
+        self.month_year_label = ttk.Label(header_frame, text="", font=(self.main_font, 16, "bold"), anchor='center')
         self.month_year_label.pack(side='left', expand=True, fill='x')
         ttk.Button(header_frame, text=">", command=lambda: self.change_month(1)).pack(side='right')
 
@@ -98,57 +102,91 @@ class DashboardCalendarFrame(ttk.Frame):
         days_of_week = ["B.e.", "Ç.a.", "Çər.", "C.a.", "Cüm.", "Şən.", "Baz."]
         for i, day in enumerate(days_of_week):
             self.calendar_frame.grid_columnconfigure(i, weight=1)
-            ttk.Label(self.calendar_frame, text=day, font=("Helvetica", 10, "bold"), anchor='center', relief='groove', padding=5).grid(row=0, column=i, sticky='nsew', pady=5)
+            ttk.Label(self.calendar_frame, text=day, font=(self.main_font, 10, "bold"), anchor='center', relief='groove', padding=5).grid(row=0, column=i, sticky='nsew', pady=5)
             
-        for i in range(1, 7):
+        for i in range(1, 8):
             self.calendar_frame.grid_rowconfigure(i, weight=1, uniform="week_row")
 
         month_calendar = calendar.monthcalendar(self.current_date.year, self.current_date.month)
+        today = date.today()
+
         for week_num, week in enumerate(month_calendar, 1):
             for day_num_idx, day_val in enumerate(week):
                 if day_val == 0: continue
                 
                 day_date = date(self.current_date.year, self.current_date.month, day_val)
-                day_frame = tk.Frame(self.calendar_frame, relief='solid', borderwidth=1, bg='white')
+                
+                # --- DÜZƏLİŞ BAŞLADI ---
+                
+                # Çərçivə stilini təyin et
+                frame_config = {'relief': 'solid', 'borderwidth': 1}
+                is_weekend = day_num_idx >= 5  # Şənbə və Bazar
+                is_today = (day_date == today)
+
+                if is_today:
+                    # Bu günün arxa fonu və çərçivəsi
+                    frame_config['bg'] = '#e8f0fe'
+                    frame_config['highlightbackground'] = '#007bff'
+                    frame_config['highlightthickness'] = 2
+                elif is_weekend:
+                    # Həftə sonlarının arxa fonu
+                    frame_config['bg'] = '#f5f5f5'
+                else:
+                    # Adi günlərin arxa fonu
+                    frame_config['bg'] = 'white'
+                
+                day_frame = tk.Frame(self.calendar_frame, **frame_config)
                 day_frame.grid(row=week_num, column=day_num_idx, sticky='nsew')
                 day_frame.grid_propagate(False)
-                
-                vacations_on_this_day = [v for v in self.vacations if v['start_date'] <= day_date <= v['end_date']]
-                
-                day_label = tk.Label(day_frame, text=str(day_val), font=("Helvetica", 10), anchor='ne', padx=3, pady=1)
+
+                day_label = tk.Label(day_frame, text=str(day_val), font=(self.main_font, 9), anchor='ne', padx=4, pady=1)
                 day_label.place(relx=1.0, rely=0.0, anchor='ne')
-                
+
+                vacations_on_this_day = [v for v in self.vacations if v.get('start_date') and v.get('end_date') and v['start_date'] <= day_date <= v['end_date']]
+
                 if not vacations_on_this_day:
-                    day_label.config(bg='white')
+                    day_label.config(bg=frame_config['bg']) # Arxa fona uyğunlaşdır
                 else:
+                    # Məzuniyyət varsa, o rəngləri tətbiq et
                     if len(vacations_on_this_day) == 1:
                         vac = vacations_on_this_day[0]
-                        is_finished = vac['end_date'] < date.today()
-                        color = "#E98585" if is_finished else self.employee_colors.get(vac['employee'], 'lightgray')
-                        day_frame.config(bg=color); day_label.config(bg=color)
-                        Tooltip(day_frame, vac['employee'])
+                        color = self.employee_colors.get(vac['employee'], 'lightgray')
+                        day_frame.config(bg=color)
+                        day_label.config(bg=color)
+                        Tooltip(day_frame, vac['employee'], font_name=self.main_font)
                         handler = lambda e, v=vac: self.on_day_click(v)
                         day_frame.bind("<Button-1>", handler)
-                    else:
-                        num_vacations = len(vacations_on_this_day)
-                        num_columns = 2 if num_vacations > 4 else 1
+                        day_label.bind("<Button-1>", handler)
+                    else: # Birdən çox məzuniyyət varsa
+                        day_label.config(bg=frame_config['bg']) # Rəqəm arxa fonu default qalsın
                         for i, vac in enumerate(vacations_on_this_day):
+                            num_columns = 2 if len(vacations_on_this_day) > 4 else 1
                             day_frame.rowconfigure(i // num_columns, weight=1)
                             day_frame.columnconfigure(i % num_columns, weight=1)
-                            is_finished = vac['end_date'] < date.today()
-                            color = "#E98585" if is_finished else self.employee_colors.get(vac['employee'], 'lightgray')
+                            color = self.employee_colors.get(vac['employee'], 'lightgray')
                             handler = lambda e, v=vac: self.on_day_click(v)
-                            indicator_label = tk.Label(day_frame, bg=color)
-                            indicator_label.grid(row=i // num_columns, column=i % num_columns, sticky='nsew')
-                            indicator_label.bind("<Button-1>", handler)
-                            Tooltip(indicator_label, vac['employee'])
-                    day_label.lift()
+                            
+                            indicator_frame = tk.Frame(day_frame, bg=color)
+                            indicator_frame.grid(row=i // num_columns, column=i % num_columns, sticky='nsew', padx=0.5, pady=0.5)
+                            indicator_frame.bind("<Button-1>", handler)
+                            Tooltip(indicator_frame, vac['employee'], font_name=self.main_font)
+                        day_label.lift() # Rəqəmi ən üstdə saxlamaq üçün
+                
+                # --- DÜZƏLİŞ BİTDİ ---
 
     def on_day_click(self, vacation_info):
-        if self.is_admin:
+        if self.is_admin and vacation_info.get('employee_id'):
             self.main_app_ref.show_employee_by_id(vacation_info['employee_id'])
 
     def change_month(self, month_delta):
-        self.current_date += timedelta(days=31 * month_delta)
-        self.current_date = self.current_date.replace(day=1)
+        current_year, current_month = self.current_date.year, self.current_date.month
+        new_month = current_month + month_delta
+        new_year = current_year
+        if new_month > 12:
+            new_month = 1
+            new_year += 1
+        elif new_month < 1:
+            new_month = 12
+            new_year -= 1
+        self.current_date = self.current_date.replace(year=new_year, month=new_month, day=1)
         self.update_calendar()

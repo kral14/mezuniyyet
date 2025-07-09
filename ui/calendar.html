@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İnteraktiv Təqvim</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="calendar-container">
+        <header class="calendar-header">
+            <button id="prev-month-btn" class="nav-btn">&lt;</button>
+            <h2 id="month-year-str"></h2>
+            <button id="next-month-btn" class="nav-btn">&gt;</button>
+        </header>
+        <div class="calendar-grid">
+            <div class="weekdays-grid">
+                <div class="weekday">B.e.</div>
+                <div class="weekday">Ç.a.</div>
+                <div class="weekday">Çər.</div>
+                <div class="weekday">C.a.</div>
+                <div class="weekday">Cüm.</div>
+                <div class="weekday">Şən.</div>
+                <div class="weekday">Baz.</div>
+            </div>
+            
+            <div id="calendar-days" class="days-grid">
+                </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

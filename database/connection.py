@@ -1,13 +1,25 @@
-# database/connection.py
+# database/connection.py (Düzəldilmiş Tam Versiya)
 
 import psycopg2
-from tkinter import messagebox
+# DÜZƏLİŞ: messagebox buradan silindi, çünki UI elementi baza kodunda olmamalıdır.
 
-DB_PARAMS = { "dbname": "neondb", "user": "neondb_owner", "password": "npg_RXHDsJQeL08a", "host": "ep-yellow-lake-a9ooylj6-pooler.gwc.azure.neon.tech", "port": "5432", "sslmode": "require" }
+DB_PARAMS = { 
+    "dbname": "neondb", 
+    "user": "neondb_owner", 
+    "password": "npg_RXHDsJQeL08a", 
+    "host": "ep-yellow-lake-a9ooylj6-pooler.gwc.azure.neon.tech", 
+    "port": "5432", 
+    "sslmode": "require" 
+}
 
 def db_connect():
+    """
+    Verilənlər bazasına qoşulmağa cəhd edir.
+    Uğursuz olarsa, xətanı yuxarıya (onu çağıran funksiyaya) ötürür.
+    """
     try:
         return psycopg2.connect(**DB_PARAMS)
     except psycopg2.OperationalError as e:
-        messagebox.showerror("Baza Qoşulma Xətası", f"Verilənlər bazasına qoşulmaq mümkün olmadı:\n{e}")
-        return None
+        # Xətanı messagebox ilə göstərmək əvəzinə, sadəcə yuxarı ötürürük.
+        # Bu xətanı UI (istifadəçi interfeysi) təbəqəsi tutub istifadəçiyə göstərməlidir.
+        raise e

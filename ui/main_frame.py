@@ -2,18 +2,19 @@ import tkinter as tk
 from tkinter import ttk, messagebox, Toplevel
 from datetime import datetime, date
 
-# Yerli importlar (eyni ui qovluğundan)
+# Düzgün importlar əlavə edildi
+from ui_components import mezuniyyet_muddetini_hesabla, CustomDateEntry
 from .dashboard_calendar_frame import DashboardCalendarFrame
 from .employee_detail_frame import EmployeeDetailFrame
 from .notifications_window import NotificationsWindow
 from .user_management_window import UserManagementWindow
 from .employee_form_window import EmployeeFormWindow
 from .archive_window import ArchiveWindow
+from .error_viewer_window import AdvancedErrorViewer
 
 # Proyekt importları
 import database
 from updater_service import UpdaterService
-from ui_components import Tooltip, mezuniyyet_muddetini_hesabla, CustomDateEntry
 
 class MainAppFrame(ttk.Frame):
     def __init__(self, parent, current_user, version_info, logout_callback):
@@ -22,6 +23,9 @@ class MainAppFrame(ttk.Frame):
         self.current_user = current_user
         self.logout_callback = logout_callback
         self.version_info = version_info
+        
+        # DÜZƏLİŞ: `main_font` atributunu birbaşa ən üst pəncərədən (MainApplication) alırıq.
+        self.main_font = self.winfo_toplevel().main_font
         
         self.notif_window = None
         self.command_check_timer = None
@@ -32,11 +36,11 @@ class MainAppFrame(ttk.Frame):
         # Stilləri təyin etmək
         style = ttk.Style(self)
         style.configure("Card.TFrame", background="white")
-        style.configure("Card.TLabel", background="white")
-        style.configure("Close.TButton", font=('Arial', 10, 'bold'), borderwidth=0, relief="flat")
+        style.configure("Card.TLabel", background="white", font=(self.main_font, 9))
+        style.configure("Close.TButton", font=(self.main_font, 10, 'bold'), borderwidth=0, relief="flat")
         style.map("Close.TButton", background=[('active', '#e8e8e8')])
-        style.configure("Summary.TLabel", font=("Helvetica", 9), background="white")
-        style.configure("SummaryValue.TLabel", font=("Helvetica", 10, "bold"), background="white")
+        style.configure("Summary.TLabel", font=(self.main_font, 9), background="white")
+        style.configure("SummaryValue.TLabel", font=(self.main_font, 10, "bold"), background="white")
         
         self.vacation_panel_active = False
         self.animation_in_progress = False
@@ -44,7 +48,7 @@ class MainAppFrame(ttk.Frame):
 
         self.create_main_layout()
         self.create_views()
-        self._create_vacation_panel() # Paneli burada yaradırıq ki, digər elementlərin üstündə olsun
+        self._create_vacation_panel()
         
         self.show_view('dashboard')
         
@@ -95,7 +99,7 @@ class MainAppFrame(ttk.Frame):
         self.setup_left_panel()
         
     def setup_left_panel(self):
-        ttk.Button(self.left_frame, text="🏠 Ana Səhifə / Dashboard", command=lambda: self.show_view('dashboard')).pack(fill='x', pady=(0, 10), ipady=4)
+        ttk.Button(self.left_frame, text="🏠 Ana Səhifə / Təqvim", command=lambda: self.show_view('dashboard')).pack(fill='x', pady=(0, 10), ipady=4)
 
         if self.is_admin:
             admin_panel = ttk.LabelFrame(self.left_frame, text="Admin Paneli")
@@ -103,11 +107,11 @@ class MainAppFrame(ttk.Frame):
             
             top_admin_frame = ttk.Frame(admin_panel)
             top_admin_frame.pack(fill='x', padx=5, pady=(5,0))
-            ttk.Button(top_admin_frame, text="✚ Yeni İşçi", command=lambda: self.open_employee_form_window(is_new=True)).pack(side='left', expand=True)
+            ttk.Button(top_admin_frame, text="✚ Yeni İşçi", command=lambda: self.open_employee_form_window(is_new=True)).pack(side='left', expand=True, fill='x')
             self.edit_employee_button = ttk.Button(top_admin_frame, text="✎ Düzəliş", state="disabled", command=lambda: self.open_employee_form_window(is_new=False))
-            self.edit_employee_button.pack(side='left', expand=True, padx=5)
+            self.edit_employee_button.pack(side='left', expand=True, fill='x', padx=5)
             self.delete_employee_button = ttk.Button(top_admin_frame, text="🗑 Sil", state="disabled", command=self.delete_employee)
-            self.delete_employee_button.pack(side='left', expand=True)
+            self.delete_employee_button.pack(side='left', expand=True, fill='x')
             
             ttk.Button(admin_panel, text="🗓️ Yeni Məzuniyyət İli", command=self._confirm_and_start_new_year).pack(fill='x', pady=2, padx=5)
             ttk.Button(admin_panel, text="🗄️ Məzuniyyət Arxivi", command=self.open_archive_view_window).pack(fill='x', pady=(0, 5), padx=5)
@@ -118,7 +122,8 @@ class MainAppFrame(ttk.Frame):
         listbox_frame = ttk.Frame(employee_frame)
         listbox_frame.pack(expand=True, fill='both', pady=5, padx=5)
         
-        self.employee_listbox = tk.Listbox(listbox_frame, font=("Helvetica", 12))
+        self.employee_listbox = tk.Listbox(listbox_frame, font=(self.main_font, 11), relief="flat", highlightthickness=1)
+        self.employee_listbox.config(highlightbackground = "#cccccc", highlightcolor= "#007bff")
         vsb = ttk.Scrollbar(listbox_frame, orient="vertical", command=self.employee_listbox.yview)
         self.employee_listbox.configure(yscrollcommand=vsb.set)
         
@@ -130,6 +135,7 @@ class MainAppFrame(ttk.Frame):
         self.views = {}
         self.views['dashboard'] = DashboardCalendarFrame(self.right_frame, self)
         self.views['dashboard'].place(in_=self.right_frame, x=0, y=0, relwidth=1, relheight=1)
+        
         self.views['employee_details'] = EmployeeDetailFrame(self.right_frame, self)
         self.views['employee_details'].place(in_=self.right_frame, x=0, y=0, relwidth=1, relheight=1)
 
@@ -191,9 +197,11 @@ class MainAppFrame(ttk.Frame):
         self._update_notification_button()
         self.refresh_employee_list(selection_to_keep)
         
-        if hasattr(self.views['dashboard'], 'load_data'):
-            self.views['dashboard'].load_data()
-
+        if self.employee_listbox.curselection():
+            self.on_employee_select()
+        else:
+            self.show_view('dashboard')
+        
     def refresh_employee_list(self, selection_to_keep=None):
         if not hasattr(self, 'employee_listbox'): return
         self.employee_listbox.delete(0, tk.END)
@@ -274,7 +282,6 @@ class MainAppFrame(ttk.Frame):
         
         separator2 = ttk.Separator(parent_frame); separator2.pack(fill='x', pady=5)
 
-
     def _create_summary_labels(self, parent, total, used, remaining):
         frame_total = ttk.Frame(parent, style="Card.TFrame"); frame_total.pack(side='left', padx=10)
         ttk.Label(frame_total, text="İllik Hüquq:", style="Summary.TLabel").pack(); ttk.Label(frame_total, text=f"{total} gün", style="SummaryValue.TLabel").pack()
@@ -297,11 +304,10 @@ class MainAppFrame(ttk.Frame):
 
     def open_error_viewer(self):
         try:
-            from .error_viewer_window import AdvancedErrorViewer
             win = AdvancedErrorViewer(self)
             self._center_toplevel(win)
-        except ImportError:
-            messagebox.showerror("Fayl Tapılmadı", "error_viewer_window.py faylı tapılmadı.")
+        except Exception as e:
+            messagebox.showerror("Pəncərə Xətası", f"Xəta jurnalı pəncərəsini açmaq mümkün olmadı:\n{e}")
             
     def open_notifications_window(self):
         if self.notif_window and self.notif_window.winfo_exists():
@@ -434,10 +440,10 @@ class MainAppFrame(ttk.Frame):
         main_frame = ttk.Frame(timer_window, padding=20)
         main_frame.pack(expand=True, fill='both')
         
-        ttk.Label(main_frame, text="Administrator tərəfindən çıxış tələbi!", font=("Helvetica", 12, "bold"), foreground="red").pack(pady=(0, 5))
+        ttk.Label(main_frame, text="Administrator tərəfindən çıxış tələbi!", font=(self.main_font, 12, "bold"), foreground="red").pack(pady=(0, 5))
         ttk.Label(main_frame, text="Proqram göstərilən vaxtda bağlanacaq.").pack(pady=(0, 10))
         
-        timer_label = ttk.Label(main_frame, text="", font=("Helvetica", 18, "bold"))
+        timer_label = ttk.Label(main_frame, text="", font=(self.main_font, 18, "bold"))
         timer_label.pack(pady=5)
 
         def update_visual_timer():
@@ -464,21 +470,21 @@ class MainAppFrame(ttk.Frame):
         panel_header = ttk.Frame(form_body, style="Card.TFrame")
         panel_header.pack(fill='x', pady=(0, 20))
         
-        self.panel_title = ttk.Label(panel_header, text="Yeni Sorğu", font=("Helvetica", 14, "bold"), style="Card.TLabel")
+        self.panel_title = ttk.Label(panel_header, text="Yeni Sorğu", font=(self.main_font, 14, "bold"), style="Card.TLabel")
         self.panel_title.pack(side='left')
         
         ttk.Button(panel_header, text="✖", width=3, style="Close.TButton", command=lambda: self.toggle_vacation_panel(show=False)).pack(side='right')
         
         ttk.Label(form_body, text="Başlanğıc Tarixi:", style="Card.TLabel").pack(anchor='w', pady=(5,2))
-        self.panel_start_cal = CustomDateEntry(form_body, date_pattern='dd.mm.yyyy')
+        self.panel_start_cal = CustomDateEntry(form_body, date_pattern='dd.mm.yyyy', font_name=self.main_font)
         self.panel_start_cal.pack(anchor='w', pady=(0,10), fill='x')
         
         ttk.Label(form_body, text="Bitmə Tarixi:", style="Card.TLabel").pack(anchor='w', pady=(5,2))
-        self.panel_end_cal = CustomDateEntry(form_body, date_pattern='dd.mm.yyyy')
+        self.panel_end_cal = CustomDateEntry(form_body, date_pattern='dd.mm.yyyy', font_name=self.main_font)
         self.panel_end_cal.pack(anchor='w', pady=(0,10), fill='x')
         
         ttk.Label(form_body, text="Qeyd:", style="Card.TLabel").pack(anchor='w', pady=(5,2))
-        self.panel_note_entry = tk.Text(form_body, height=4, relief="solid", borderwidth=1, font=("Helvetica", 10))
+        self.panel_note_entry = tk.Text(form_body, height=4, relief="solid", borderwidth=1, font=(self.main_font, 10))
         self.panel_note_entry.pack(anchor='w', pady=0, fill='both', expand=True)
         
     def toggle_vacation_panel(self, show, employee_name=None, vacation=None):
