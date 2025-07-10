@@ -1,61 +1,52 @@
-# database/__init__.py (YEKUN VƏ TAM VERSİYA)
+# database/__init__.py (QOŞULMA MENECERİ İLƏ YENİ VERSİYA)
+import os
+import json
 
+_active_connection = None # Sessiya üçün aktiv qoşulmanı saxlayan qlobal dəyişən
+
+def set_active_connection(conn):
+    """Giriş zamanı aktiv qoşulmanı təyin edir."""
+    global _active_connection
+    _active_connection = conn
+
+def get_connection():
+    """Aktiv sessiyanın qoşulmasını qaytarır."""
+    if not _active_connection or _active_connection.closed:
+        raise ConnectionError("Aktiv verilənlər bazası qoşulması mövcud deyil və ya bağlanıb.")
+    return _active_connection
+
+def close_active_connection():
+    """Çıxış zamanı aktiv qoşulmanı bağlayır."""
+    global _active_connection
+    if _active_connection and not _active_connection.closed:
+        _active_connection.close()
+    _active_connection = None
+
+# ... (get_active_db_params və digər importlar olduğu kimi qalır) ...
+try:
+    _BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    CONFIG_PATH = os.path.join(_BASE_DIR, "config.json")
+except NameError: CONFIG_PATH = "config.json"
+
+def get_active_db_params():
+    if not os.path.exists(CONFIG_PATH): raise FileNotFoundError(f"Konfiqurasiya faylı tapılmadı: {CONFIG_PATH}")
+    try:
+        with open(CONFIG_PATH, 'r', encoding='utf-8') as f: config = json.load(f)
+        active_company = config.get("active_company")
+        if not active_company or not config.get("companies"): raise ConnectionError("Aktiv şirkət təyin edilməyib.")
+        params = config["companies"].get(active_company)
+        if not params: raise ConnectionError(f"'{active_company}' üçün konfiqurasiya tapılmadı.")
+        if not params.get("sslmode"): params["sslmode"] = "require"
+        return params
+    except (json.JSONDecodeError, IOError) as e: raise ConnectionError(f"Konfiqurasiya faylını oxumaq mümkün olmadı: {e}")
+
+# Funksiyaların importu
 from .connection import db_connect
-from .settings_queries import * # YENİ ƏLAVƏ EDİLƏN SƏTİR
-from .error_queries import * # YENİ ƏLAVƏ EDİLƏN SƏTİR
-from .user_queries import (
-    get_user_for_login,
-    create_new_user,
-    update_employee,
-    delete_employee, # Əgər bu funksiya user_queries.py-dədirsə
-    set_user_activity, # Əgər bu funksiya user_queries.py-dədirsə
-    check_if_name_exists,
-    load_data_for_user
-)
-from .session_queries import (
-    # ...
-    get_login_history,
-    get_all_active_non_admin_user_ids # YENİ ƏLAVƏ EDİLDİ
-)
-from .vacation_queries import (
-    add_vacation,
-    update_vacation,
-    update_vacation_status,
-    delete_vacation,
-    toggle_vacation_activity,
-    get_all_active_vacations # YENİ ƏLAVƏ EDİLƏN SƏTİR
-)
-
-from .session_queries import (
-    add_user_session,
-    remove_user_session,
-    get_active_session_counts,
-    get_active_user_details,
-    force_remove_sessions_by_user_id,
-    get_login_history # get_login_history artıq buradan import olunur
-)
-
-from .notification_queries import (
-    get_unread_notifications_for_user,
-    get_all_notifications_for_user,
-    mark_notifications_as_read,
-    delete_notifications
-)
-
-from .command_queries import (
-    issue_timed_logout_command,
-    issue_immediate_logout_command,
-    get_pending_commands,
-    mark_command_as_executed
-)
-
-from .system_queries import (
-    get_employees_with_archivable_vacations,
-    start_new_vacation_year,
-    load_archived_vacations_for_year,
-    get_latest_version
-)
-
-# Qeyd: Yuxarıda sadalanan hər bir funksiyanın öz .py faylında mövcud olduğundan əmin olun.
-# `delete_employee` və `set_user_activity` kimi funksiyalar əgər `user_queries.py`-də deyilsə,
-# onların olduğu fayldan import edilməlidir. Mənim təlimatlarıma görə `user_queries.py`-də olmalıdırlar.
+from .settings_queries import *
+from .error_queries import *
+from .user_queries import *
+from .session_queries import *
+from .vacation_queries import *
+from .command_queries import *
+from .system_queries import *
+from .notification_queries import *

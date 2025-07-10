@@ -1,25 +1,19 @@
-# database/connection.py (Düzəldilmiş Tam Versiya)
-
+# database/connection.py (SON DÜZƏLİŞ)
 import psycopg2
-# DÜZƏLİŞ: messagebox buradan silindi, çünki UI elementi baza kodunda olmamalıdır.
-
-DB_PARAMS = { 
-    "dbname": "neondb", 
-    "user": "neondb_owner", 
-    "password": "npg_RXHDsJQeL08a", 
-    "host": "ep-yellow-lake-a9ooylj6-pooler.gwc.azure.neon.tech", 
-    "port": "5432", 
-    "sslmode": "require" 
-}
+from . import get_active_db_params
 
 def db_connect():
     """
-    Verilənlər bazasına qoşulmağa cəhd edir.
-    Uğursuz olarsa, xətanı yuxarıya (onu çağıran funksiyaya) ötürür.
+    Aktiv şirkətin verilənlər bazasına qoşulur.
     """
     try:
-        return psycopg2.connect(**DB_PARAMS)
-    except psycopg2.OperationalError as e:
-        # Xətanı messagebox ilə göstərmək əvəzinə, sadəcə yuxarı ötürürük.
-        # Bu xətanı UI (istifadəçi interfeysi) təbəqəsi tutub istifadəçiyə göstərməlidir.
+        db_params = get_active_db_params()
+        
+        # --- DÜZƏLİŞ BURADADIR ---
+        # psycopg2-nin tanımadığı "company_code" parametrini qoşulmadan əvvəl silirik.
+        db_params.pop('company_code', None)
+        
+        return psycopg2.connect(**db_params)
+        
+    except (psycopg2.Error, FileNotFoundError, ConnectionError) as e:
         raise e

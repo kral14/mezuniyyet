@@ -1,4 +1,4 @@
-# database/user_queries.py (DÜZƏLDİLMİŞ VƏ YEKUN VERSİYA)
+# database/user_queries.py (Düzgün Versiya)
 
 import bcrypt
 import psycopg2
@@ -6,42 +6,52 @@ from tkinter import messagebox
 from .connection import db_connect
 from .session_queries import get_active_session_counts
 
-def get_user_for_login(username):
-    """Giriş üçün istifadəçi məlumatlarını və maksimum sessiya sayını gətirir."""
-    conn = db_connect()
+def get_user_for_login(username, company_code, connection=None):
+    """Giriş üçün istifadəçini həm istifadəçi adına, həm də şirkət koduna görə axtarır."""
+    conn = connection or db_connect()
     if not conn: return None
     try:
         with conn.cursor() as cur:
-            cur.execute("SELECT id, name, password_hash, role, max_sessions FROM employees WHERE username = %s AND is_active = TRUE", (username,))
+            # DÜZƏLİŞ: SQL sorğusuna company_code yoxlaması əlavə edildi
+            cur.execute(
+                "SELECT id, name, password_hash, role, max_sessions FROM employees WHERE username = %s AND company_code = %s AND is_active = TRUE",
+                (username, company_code)
+            )
             return cur.fetchone()
     except psycopg2.Error as e:
         messagebox.showerror("Baza Xətası", f"Giriş zamanı xəta: {e}")
         return None
     finally:
-        if conn: conn.close()
+        if not connection and conn:
+            conn.close()
+# ... (faylın əvvəli olduğu kimi qalır) ...
 
-def create_new_user(name, username, password, role='user', total_days=30, max_sessions=1):
-    """Yeni istifadəçi yaradır."""
+def create_new_user(name, username, password, company_code, role='user', total_days=30, max_sessions=1, connection=None):
+    """Yeni istifadəçi yaradır və şirkət kodunu da qeyd edir."""
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-    conn = db_connect()
+    conn = connection or db_connect()
     if not conn: return False
     try:
         with conn.cursor() as cur:
             cur.execute(
-                "INSERT INTO employees (name, username, password_hash, role, total_vacation_days, max_sessions) VALUES (%s, %s, %s, %s, %s, %s)",
-                (name, username, hashed_password.decode('utf-8'), role, total_days, max_sessions)
+                "INSERT INTO employees (name, username, password_hash, role, total_vacation_days, max_sessions, company_code) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                (name, username, hashed_password.decode('utf-8'), role, total_days, max_sessions, company_code)
             )
         conn.commit()
         return True
     except psycopg2.IntegrityError:
         messagebox.showerror("Xəta", "Bu istifadəçi adı artıq mövcuddur.")
+        conn.rollback()
         return False
     except psycopg2.Error as e:
         messagebox.showerror("Baza Xətası", f"Qeydiyyat zamanı xəta: {e}")
+        conn.rollback()
         return False
     finally:
-        if conn: conn.close()
+        if not connection and conn:
+            conn.close()
 
+# ... (faylın qalan hissəsi olduğu kimi qalır) ...
 def update_employee(emp_id, new_name, days, max_sessions):
     """İşçi məlumatını və maksimum sessiya sayını yeniləyir."""
     conn = db_connect()
@@ -56,7 +66,7 @@ def update_employee(emp_id, new_name, days, max_sessions):
         if conn: conn.close()
 
 def delete_employee(emp_id):
-    """(YENİ ƏLAVƏ EDİLDİ) İşçini verilənlər bazasından silir."""
+    """İşçini verilənlər bazasından silir."""
     conn = db_connect()
     if not conn: return
     try:
@@ -69,7 +79,7 @@ def delete_employee(emp_id):
         if conn: conn.close()
 
 def set_user_activity(user_id, new_status):
-    """(YENİ ƏLAVƏ EDİLDİ) İşçinin aktivlik statusunu dəyişir."""
+    """İşçinin aktivlik statusunu dəyişir."""
     conn = db_connect()
     if not conn: return
     try:
@@ -82,7 +92,7 @@ def set_user_activity(user_id, new_status):
         if conn: conn.close()
 
 def check_if_name_exists(name):
-    """(YENİ ƏLAVƏ EDİLDİ) Verilmiş adla işçinin mövcud olub-olmadığını yoxlayır."""
+    """Verilmiş adla işçinin mövcud olub-olmadığını yoxlayır."""
     conn = db_connect()
     if not conn: return False
     try:
@@ -100,8 +110,8 @@ def load_data_for_user(current_user):
     conn = db_connect()
     if not conn: return {}
     data = {}
-    active_sessions = get_active_session_counts()
     try:
+        active_sessions = get_active_session_counts()
         with conn.cursor() as cur:
             if current_user['role'].strip() == 'admin':
                 cur.execute("SELECT id, name, total_vacation_days, is_active, max_sessions FROM employees ORDER BY name")

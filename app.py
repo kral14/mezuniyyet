@@ -1,5 +1,3 @@
-# app.py (Düzəldilmiş Tam Versiya)
-
 import tkinter as tk
 from tkinter import ttk, messagebox
 import logging
@@ -8,36 +6,63 @@ import sys
 import socket
 import json
 import traceback
-
 import bcrypt
 import psycopg2
+
 # Proyektin daxili importları
 import database
 from auth_windows import LoginFrame, RegisterFrame
 from ui import MainAppFrame
+# İlk qurulum pəncərəsinə artıq ehtiyac yoxdur.
+# from ui.initial_config_window import InitialDBConfigWindow 
 
 CONFIG_FILE = "config.json"
-APP_VERSION = "4.3" # Versiyanı mərkəzi bir yerdə saxlayaq
+APP_VERSION = "4.3"
 
-# --- Köməkçi Funksiyalar ---
+# DÜZƏLİŞ: Bütün şirkətlərin məlumatlarını proqramın daxilində saxlayırıq.
+# Yeni şirkət əlavə etmək üçün bu siyahını yeniləyib proqramı yenidən build etmək lazımdır.
+KNOWN_COMPANIES = {
+    "aztrade": {
+        "company_name": "Yeni_sirket",
+        "db_params": {
+            "host": "ep-royal-moon-a2n0reuz-pooler.eu-central-1.aws.neon.tech",
+            "port": "5432",
+            "dbname": "neondb",
+            "user": "neondb_owner",
+            "password": "npg_sroMeB06VSiQ",
+            "sslmode": "require"
+        }
+    },
+    "aztrade12": {
+        "company_name": "kohnesi",
+        "db_params": {
+            "host": "ep-yellow-lake-a9ooylj6-pooler.gwc.azure.neon.tech",
+            "port": "5432",
+            "dbname": "neondb",
+            "user": "neondb_owner",
+            "password": "npg_RXHDsJQeL08a",
+            "sslmode": "require"
+        }
+    }
+}
 
+
+# --- Köməkçi Funksiyalar (dəyişiklik yoxdur) ---
 def get_log_file_path():
     try:
-        # .exe olaraq işləyəndə %APPDATA% qovluğunu istifadə etsin
         if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
             app_data_dir = os.path.join(os.getenv('APPDATA'), 'MezuniyyetSistemi')
-        else: # Normal `python app.py` olaraq işləyəndə
+        else:
             app_data_dir = os.path.dirname(os.path.abspath(__file__))
         os.makedirs(app_data_dir, exist_ok=True)
         return os.path.join(app_data_dir, 'app_debug.log')
     except Exception:
-        # Hər hansı bir xəta olarsa, proqramın olduğu yerdə saxlasın
         return 'app_debug.log'
 
 def get_ip_address():
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.settimeout(1) # Gözləmə müddətini azaldırıq
+        s.settimeout(0.1)
         s.connect(("8.8.8.8", 80))
         ip = s.getsockname()[0]
     except Exception:
@@ -48,7 +73,7 @@ def get_ip_address():
 
 def load_config():
     if not os.path.exists(CONFIG_FILE):
-        return {}
+        return {} # Fayl yoxdursa, boş lüğət qaytar
     try:
         with open(CONFIG_FILE, "r", encoding='utf-8') as f:
             return json.load(f)
@@ -58,12 +83,11 @@ def load_config():
 def save_config(config_data):
     try:
         with open(CONFIG_FILE, "w", encoding='utf-8') as f:
-            json.dump(config_data, f, indent=4)
+            json.dump(config_data, f, indent=4, ensure_ascii=False)
     except IOError as e:
         logging.error(f"Config faylı yazılarkən xəta: {e}")
 
 # --- Əsas Proqram Sinifi ---
-
 class MainApplication(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -73,7 +97,6 @@ class MainApplication(tk.Tk):
         self.version_info = {"current": APP_VERSION, "latest": ""}
         self.title(f"Məzuniyyət İdarəetmə Sistemi v{self.version_info['current']}")
 
-        # Şriftləri və stilləri mərkəzi konfiqurasiya edirik
         self.main_font = "Segoe UI"
         self.configure_styles()
 
@@ -85,42 +108,34 @@ class MainApplication(tk.Tk):
         
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         
-        self._initialize_auth_frames()
-        self.check_database_connection()
+        # DÜZƏLİŞ: İlkin konfiqurasiya yoxlaması ləğv edildi, birbaşa proqram başlayır.
+        self.start_app()
 
     def configure_styles(self):
-        """Bütün proqram üçün şriftləri və stilləri təyin edir."""
         s = ttk.Style()
-        s.theme_use('vista') # Daha müasir görünüş üçün 'vista', 'xpnative', və ya 'clam' istifadə etmək olar
-        
-        # Bütün ttk elementləri üçün standart şrifti təyin et
+        s.theme_use('vista')
         s.configure('.', font=(self.main_font, 10))
-        
-        # Xüsusi elementlərin şriftlərini fərdiləşdir
         s.configure('TNotebook.Tab', font=(self.main_font, 10))
         s.configure('TLabelframe.Label', font=(self.main_font, 9, 'bold'))
         s.configure('TButton', font=(self.main_font, 9))
-        s.configure('Header.TLabel', font=(self.main_font, 14, 'bold'))
+        s.configure("Accent.TButton", foreground="white", background="#007bff")
+
+    def start_app(self):
+        self._initialize_auth_frames()
+        self.show_login_frame()
 
     def on_closing(self):
-        """Proqram bağlanarkən aktiv sessiyanı da bağlayır."""
-        if self.current_user and self.session_id:
-            database.remove_user_session(self.session_id, self.login_history_id)
+        if self.current_user:
+            database.close_active_connection()
         self.destroy()
 
     def _initialize_auth_frames(self):
-        """Giriş və qeydiyyat pəncərələrini ilkin hazırlayır."""
         config = load_config()
-        ip_address = get_ip_address()
-        last_username = config.get(ip_address, {}).get("last_user", "")
-
-        # LoginFrame yaradarkən bütün lazımi callback-ləri ötürürük
-        self.frames['LoginFrame'] = LoginFrame(self.container, self.attempt_login, self.show_register_frame, last_username)
+        last_login = config.get("last_login_info", {})
+        self.frames['LoginFrame'] = LoginFrame(self.container, self.attempt_login, self.show_register_frame, last_login)
         self.frames['RegisterFrame'] = RegisterFrame(self.container, self.attempt_register, self.show_login_frame)
 
     def show_frame(self, frame_name, geometry="400x550", minsize=(350, 500)):
-        """Verilən adda olan pəncərəni göstərir və digərlərini gizlədir."""
-        # Əsas proqram pəncərəsi varsa və yeni pəncərə o deyilsə, onu məhv et
         if 'MainAppFrame' in self.frames and self.frames['MainAppFrame'].winfo_exists():
             self.frames['MainAppFrame'].destroy()
             del self.frames['MainAppFrame']
@@ -134,141 +149,121 @@ class MainApplication(tk.Tk):
             frame.tkraise()
 
     def show_login_frame(self):
+        if 'LoginFrame' not in self.frames:
+            self._initialize_auth_frames()
+        self.deiconify()
         self.show_frame('LoginFrame')
 
     def show_register_frame(self):
         self.show_frame('RegisterFrame')
 
-    def attempt_login(self, username, password, remember_me):
+    # app.py (Düzəldilmiş)
+# ... (faylın əvvəli olduğu kimi qalır) ...
+
+    def attempt_login(self, company_code, username, password, remember_me):
+        if not all([company_code, username, password]):
+            messagebox.showerror("Xəta", "Bütün sahələr doldurulmalıdır."); return
+        
+        company_info = KNOWN_COMPANIES.get(company_code)
+        if not company_info:
+            messagebox.showerror("Xəta", "Daxil edilən şirkət kodu tapılmadı."); return
+        
+        db_params = company_info["db_params"]
+        conn = None
         try:
-            is_maintenance = database.get_maintenance_mode()
-            user_data = database.get_user_for_login(username)
-
-            if is_maintenance and (not user_data or user_data[3].strip() != 'admin'):
-                messagebox.showerror("Giriş Mümkün Deyil", "Sistemdə texniki işlər aparılır.\nZəhmət olmasa, daha sonra yenidən cəhd edin.")
-                return
-
+            conn = psycopg2.connect(**db_params)
+            
+            # DÜZƏLİŞ: get_user_for_login funksiyasına company_code ötürülür
+            user_data = database.get_user_for_login(username, company_code, connection=conn)
+            
             if user_data and bcrypt.checkpw(password.encode('utf-8'), user_data[2].encode('utf-8')):
-                user_id, name, role, max_sessions = user_data[0], user_data[1], user_data[3], user_data[4]
-                
-                active_sessions = database.get_active_session_counts().get(user_id, 0)
-                if active_sessions >= max_sessions:
-                    messagebox.showerror("Giriş Məhdudiyyəti", f"Bu istifadəçi üçün maksimum {max_sessions} aktiv sessiyaya icazə verilir.")
-                    return
-
-                ip_address = get_ip_address()
-                self.session_id, self.login_history_id = database.add_user_session(user_id, ip_address)
-
-                if not self.session_id:
-                    messagebox.showerror("Xəta", "Sessiya yaradıla bilmədi.")
-                    return
-
-                self.current_user = {'id': user_id, 'name': name, 'role': role.strip()}
-                
                 config = load_config()
-                if ip_address not in config: config[ip_address] = {}
-                config[ip_address]["last_user"] = username if remember_me else ""
+                if "companies" not in config: config["companies"] = {}
+                for code, info in KNOWN_COMPANIES.items():
+                    config["companies"][info["company_name"]] = {"company_code": code, **info["db_params"]}
+                config["active_company"] = company_info["company_name"]
+                if remember_me:
+                    config["last_login_info"] = {"company_code": company_code, "username": username}
+                else:
+                    config.pop("last_login_info", None)
                 save_config(config)
-                
+
+                database.set_active_connection(conn)
+                user_id, name, _, role, _ = user_data
+                self.current_user = {'id': user_id, 'name': name, 'role': role.strip(), 'username': username}
                 self.show_main_app_frame()
             else:
+                if conn: conn.close()
                 messagebox.showerror("Xəta", "İstifadəçi adı və ya şifrə yanlışdır.")
+        except psycopg2.Error as e:
+            if conn: conn.close()
+            messagebox.showerror("Giriş Xətası", f"Verilənlər bazasına qoşularkən xəta baş verdi:\n{e}")
         except Exception as e:
-            messagebox.showerror("Giriş Xətası", f"Giriş zamanı xəta baş verdi: {e}")
-            logging.error(f"Giriş xətası: {traceback.format_exc()}")
+            if conn: conn.close()
+            messagebox.showerror("Giriş Xətası", f"Naməlum xəta baş verdi: {e}")
 
-    def attempt_register(self, name, username, password, confirm_password):
-        if not all([name, username, password, confirm_password]):
-            messagebox.showerror("Xəta", "Bütün xanalar doldurulmalıdır.")
-            return
+# ... (faylın qalan hissəsi olduğu kimi qalır) ...
+    # ... (faylın əvvəli olduğu kimi qalır) ...
+
+    def attempt_register(self, company_code, name, username, password, confirm_password):
+        if not all([company_code, name, username, password, confirm_password]):
+            messagebox.showerror("Xəta", "Bütün xanalar doldurulmalıdır."); return
         if password != confirm_password:
-            messagebox.showerror("Xəta", "Şifrələr eyni deyil.")
-            return
+            messagebox.showerror("Xəta", "Şifrələr eyni deyil."); return
         
+        company_info = KNOWN_COMPANIES.get(company_code)
+        if not company_info:
+            messagebox.showerror("Xəta", "Daxil edilən şirkət kodu tapılmadı."); return
+        
+        db_params = company_info["db_params"]
+        conn = None
         try:
-            if database.create_new_user(name, username, password):
+            conn = psycopg2.connect(**db_params)
+            # DÜZƏLİŞ: company_code parametrini ötürürük
+            if database.create_new_user(name, username, password, company_code=company_code, connection=conn):
                 messagebox.showinfo("Uğurlu", "Qeydiyyat uğurla tamamlandı. İndi daxil ola bilərsiniz.")
                 self.show_login_frame()
+        except psycopg2.Error as e:
+            messagebox.showerror("Qeydiyyat Xətası", f"Verilənlər bazası ilə əlaqə zamanı xəta: {e}")
         except Exception as e:
-            messagebox.showerror("Qeydiyyat Xətası", f"Qeydiyyat zamanı xəta: {e}")
-            logging.error(f"Qeydiyyat xətası: {traceback.format_exc()}")
-
+            messagebox.showerror("Qeydiyyat Xətası", f"Naməlum xəta baş verdi: {e}")
+        finally:
+            if conn: conn.close()
+            
+# ... (faylın qalan hissəsi olduğu kimi qalır) ...
     def show_main_app_frame(self):
         for frame in self.frames.values():
-            if frame.winfo_exists():
-                frame.place_forget()
-            
-        self.geometry("1200x700")
-        self.minsize(1000, 600)
-        
+            if frame.winfo_exists(): frame.place_forget()
+        self.geometry("1200x700"); self.minsize(1000, 600)
         main_frame = MainAppFrame(self.container, self.current_user, self.version_info, self.logout)
         self.frames['MainAppFrame'] = main_frame
         main_frame.pack(fill="both", expand=True)
 
-    def logout(self, message=None):
-        if self.current_user:
-            database.remove_user_session(self.session_id, self.login_history_id)
-        
-        self.session_id = None
-        self.login_history_id = None
+    def logout(self, restart=False):
+        database.close_active_connection()
+        if restart:
+            self.destroy(); python = sys.executable; os.execl(python, python, *sys.argv); return
         self.current_user = None
-        
-        if message:
-            messagebox.showwarning("Sistem Mesajı", message, parent=self)
-            
-        self.show_login_frame()
-    
-    def check_database_connection(self):
-        try:
-            conn = database.db_connect()
-            if conn:
-                conn.close() 
-                self.show_login_frame()
-            else:
-                # db_connect() içində onsuz da xəta göstərilir, amma hər ehtimala qarşı
-                self.destroy()
-        except psycopg2.Error as e:
-            messagebox.showerror("Kritik Baza Xətası", f"Verilənlər bazasına qoşulmaq mümkün olmadı:\n{e}\n\nProqram bağlanır.")
-            self.destroy()
+        for widget in self.container.winfo_children(): widget.destroy()
+        self.frames.clear()
+        self.start_app()
 
-# --- Qlobal Xəta Tutucu (Global Exception Handler) ---
 def handle_global_exception(exc_type, exc_value, exc_traceback):
-    """Gözlənilməz xətaları tutub loga və bazaya yazır."""
     error_details = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))
-    
-    # Əgər 'app' obyekti mövcuddursa, istifadəçi ID-sini götürməyə çalış
-    user_id = None
-    if 'app' in globals() and isinstance(app, MainApplication) and hasattr(app, 'current_user') and app.current_user:
-        user_id = app.current_user.get('id')
-    
     logging.critical("QOBAL GÖZLƏNİLMƏZ XƏTA BAŞ VERDİ:\n%s", error_details)
-    
     try:
-        database.log_error_to_db(user_id, error_details)
+        # DB bağlantısı olmadan da xətanı loglaya bilmək üçün bu hissəni təhlükəsiz edirik.
+        if 'app' in globals() and app.current_user and database.get_connection() and not database.get_connection().closed:
+            user_id = app.current_user.get('id')
+            database.log_error_to_db(user_id, error_details)
     except Exception as db_err:
         logging.error(f"Xəta logunu bazaya yazmaq mümkün olmadı: {db_err}")
-
-    messagebox.showerror(
-        "Gözlənilməz Xəta",
-        "Proqramda gözlənilməz bir xəta baş verdi. Məlumat adminə göndərildi.\n"
-        "Zəhmət olmasa, proqramı yenidən başladın."
-    )
-    if 'app' in globals() and app.winfo_exists():
-        app.destroy()
+    messagebox.showerror("Gözlənilməz Xəta", "Proqramda gözlənilməz bir xəta baş verdi. Detallar üçün log faylına baxın.")
+    if 'app' in globals() and app.winfo_exists(): app.destroy()
 
 if __name__ == "__main__":
-    # Log faylının konfiqurasiyası
     log_file = get_log_file_path()
-    logging.basicConfig(
-        level=logging.DEBUG, 
-        format='%(asctime)s - %(levelname)s - %(message)s - [%(filename)s:%(lineno)d]', 
-        handlers=[
-            logging.FileHandler(log_file, 'a', 'utf-8'),
-            logging.StreamHandler() # Konsola da yazdırmaq üçün
-        ]
-    )
-    
-    # Qlobal xəta tutucunu təyin edirik
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s - [%(filename)s:%(lineno)d]', handlers=[logging.FileHandler(log_file, 'a', 'utf-8'), logging.StreamHandler()])
     sys.excepthook = handle_global_exception
     
     app = MainApplication()

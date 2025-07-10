@@ -264,3 +264,221 @@ AttributeError: 'Frame' object has no attribute 'main_font'
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 _tkinter.TclError: unknown option "-font_name"
  - [app.py:178]
+2025-07-10 10:34:40,338 - CRITICAL - QOBAL GÖZLƏNİLMƏZ XƏTA BAŞ VERDİ:
+Traceback (most recent call last):
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 285, in <module>
+    app = MainApplication()
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 89, in __init__
+    self.check_database_connection()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 234, in check_database_connection
+    conn = database.db_connect()
+  File "c:\Users\nesib\Desktop\mezuniyyet github\database\connection.py", line 26, in db_connect
+    raise ConnectionError("Verilənlər bazası konfiqurasiyası tapılmadı ('config.json').")
+ConnectionError: Verilənlər bazası konfiqurasiyası tapılmadı ('config.json').
+ - [app.py:255]
+2025-07-10 10:34:40,338 - ERROR - Xəta logunu bazaya yazmaq mümkün olmadı: Verilənlər bazası konfiqurasiyası tapılmadı ('config.json'). - [app.py:260]
+2025-07-10 10:46:20,778 - CRITICAL - QOBAL GÖZLƏNİLMƏZ XƏTA BAŞ VERDİ:
+Traceback (most recent call last):
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 295, in <module>
+    app = MainApplication()
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 99, in __init__
+    self.check_database_connection()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 244, in check_database_connection
+    conn = database.db_connect()
+TypeError: db_connect() missing 1 required positional argument: 'db_params'
+ - [app.py:265]
+2025-07-10 10:46:20,778 - ERROR - Xəta logunu bazaya yazmaq mümkün olmadı: db_connect() missing 1 required positional argument: 'db_params' - [app.py:270]
+2025-07-10 11:08:36,699 - CRITICAL - QOBAL GÖZLƏNİLMƏZ XƏTA BAŞ VERDİ:
+Traceback (most recent call last):
+  File "c:\Users\nesib\Desktop\mezuniyyet github\database\__init__.py", line 20, in get_active_db_params
+    raise ConnectionError("Aktiv şirkət və ya şirkətlər bölməsi konfiqurasiyada tapılmadı.")
+ConnectionError: Aktiv şirkət və ya şirkətlər bölməsi konfiqurasiyada tapılmadı.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 295, in <module>
+    app = MainApplication()
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 99, in __init__
+    self.check_database_connection()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 244, in check_database_connection
+    conn = database.db_connect()
+  File "c:\Users\nesib\Desktop\mezuniyyet github\database\connection.py", line 16, in db_connect
+    raise e
+  File "c:\Users\nesib\Desktop\mezuniyyet github\database\connection.py", line 12, in db_connect
+    db_params = get_active_db_params()
+  File "c:\Users\nesib\Desktop\mezuniyyet github\database\__init__.py", line 26, in get_active_db_params
+    raise ConnectionError(f"Konfiqurasiya faylını oxumaq mümkün olmadı: {e}")
+ConnectionError: Konfiqurasiya faylını oxumaq mümkün olmadı: Aktiv şirkət və ya şirkətlər bölməsi konfiqurasiyada tapılmadı.
+ - [app.py:265]
+2025-07-10 11:08:36,700 - ERROR - Xəta logunu bazaya yazmaq mümkün olmadı: Konfiqurasiya faylını oxumaq mümkün olmadı: Aktiv şirkət və ya şirkətlər bölməsi konfiqurasiyada tapılmadı. - [app.py:270]
+2025-07-10 11:10:39,761 - ERROR - Giriş xətası: Traceback (most recent call last):
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 183, in attempt_login
+    self.show_main_app_frame()
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 214, in show_main_app_frame
+    main_frame = MainAppFrame(self.container, self.current_user, self.version_info, self.logout)
+  File "c:\Users\nesib\Desktop\mezuniyyet github\ui\main_frame.py", line 57, in __init__
+    self.load_and_refresh_data()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\nesib\Desktop\mezuniyyet github\ui\main_frame.py", line 200, in load_and_refresh_data
+    self._update_notification_button()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\nesib\Desktop\mezuniyyet github\ui\main_frame.py", line 398, in _update_notification_button
+    unread_count = database.get_unread_notifications_for_user(self.current_user['id'])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'database' has no attribute 'get_unread_notifications_for_user'
+ - [app.py:188]
+2025-07-10 11:29:28,727 - ERROR - İlkin qoşulma xətası: Could not read configuration file: Expecting value: line 1 column 1 (char 0). Qurulum pəncərəsi açılır. - [app.py:214]
+2025-07-10 12:05:01,243 - CRITICAL - QOBAL GÖZLƏNİLMƏZ XƏTA BAŞ VERDİ:
+Traceback (most recent call last):
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 249, in <module>
+    app = MainApplication()
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 84, in __init__
+    self.check_database_connection()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\tkinter\__init__.py", line 2546, in __getattr__
+    return getattr(self.tk, attr)
+AttributeError: '_tkinter.tkapp' object has no attribute 'check_database_connection'
+ - [app.py:235]
+2025-07-10 12:05:01,243 - ERROR - Xəta logunu bazaya yazmaq mümkün olmadı: Could not read configuration file: Expecting value: line 1 column 1 (char 0) - [app.py:240]
+2025-07-10 12:07:31,407 - CRITICAL - QOBAL GÖZLƏNİLMƏZ XƏTA BAŞ VERDİ:
+Traceback (most recent call last):
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 263, in <module>
+    app = MainApplication()
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 84, in __init__
+    self.check_database_connection()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\tkinter\__init__.py", line 2546, in __getattr__
+    return getattr(self.tk, attr)
+AttributeError: '_tkinter.tkapp' object has no attribute 'check_database_connection'
+ - [app.py:249]
+2025-07-10 12:07:31,407 - ERROR - Xəta logunu bazaya yazmaq mümkün olmadı: Could not read configuration file: Expecting value: line 1 column 1 (char 0) - [app.py:254]
+2025-07-10 12:12:13,000 - INFO - İlkin qoşulma mümkün olmadı: Configuration file not found: c:\Users\nesib\Desktop\mezuniyyet github\config.json. 'setup_admin' rejimi aktivdir. - [app.py:166]
+2025-07-10 12:12:19,040 - INFO - İlkin qoşulma mümkün olmadı: Configuration file not found: c:\Users\nesib\Desktop\mezuniyyet github\config.json. 'setup_admin' rejimi aktivdir. - [app.py:166]
+2025-07-10 12:12:28,199 - ERROR - Giriş xətası: Traceback (most recent call last):
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 124, in attempt_login
+    user_data = database.get_user_for_login(username)
+  File "c:\Users\nesib\Desktop\mezuniyyet github\database\user_queries.py", line 11, in get_user_for_login
+    conn = db_connect()
+  File "c:\Users\nesib\Desktop\mezuniyyet github\database\connection.py", line 16, in db_connect
+    raise e
+  File "c:\Users\nesib\Desktop\mezuniyyet github\database\connection.py", line 12, in db_connect
+    db_params = get_active_db_params()
+  File "c:\Users\nesib\Desktop\mezuniyyet github\database\__init__.py", line 14, in get_active_db_params
+    raise FileNotFoundError(f"Configuration file not found: {CONFIG_PATH}")
+FileNotFoundError: Configuration file not found: c:\Users\nesib\Desktop\mezuniyyet github\config.json
+ - [app.py:134]
+2025-07-10 12:13:16,421 - INFO - İlkin qoşulma mümkün olmadı: Configuration file not found: c:\Users\nesib\Desktop\mezuniyyet github\config.json. 'setup_admin' rejimi aktivdir. - [app.py:166]
+2025-07-10 12:21:27,316 - INFO - İlkin qoşulma mümkün olmadı: Configuration file not found: c:\Users\nesib\Desktop\mezuniyyet github\config.json. 'setup_admin' rejimi aktivdir. - [app.py:166]
+2025-07-10 12:25:34,042 - INFO - İlkin qoşulma mümkün olmadı: Configuration file not found: c:\Users\nesib\Desktop\mezuniyyet github\config.json. 'setup_admin' rejimi aktivdir. - [app.py:166]
+2025-07-10 12:28:44,174 - INFO - İlkin qoşulma mümkün olmadı: invalid dsn: invalid connection option "company_code"
+. 'setup_admin' rejimi aktivdir. - [app.py:166]
+2025-07-10 12:28:55,858 - ERROR - Giriş xətası: Traceback (most recent call last):
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 124, in attempt_login
+    user_data = database.get_user_for_login(username)
+  File "c:\Users\nesib\Desktop\mezuniyyet github\database\user_queries.py", line 11, in get_user_for_login
+    conn = db_connect()
+  File "c:\Users\nesib\Desktop\mezuniyyet github\database\connection.py", line 16, in db_connect
+    raise e
+  File "c:\Users\nesib\Desktop\mezuniyyet github\database\connection.py", line 13, in db_connect
+    return psycopg2.connect(**db_params)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\nesib\AppData\Roaming\Python\Python313\site-packages\psycopg2\__init__.py", line 134, in connect
+    dsn = _ext.make_dsn(dsn, **kwargs)
+  File "C:\Users\nesib\AppData\Roaming\Python\Python313\site-packages\psycopg2\extensions.py", line 167, in make_dsn
+    parse_dsn(dsn)
+    ~~~~~~~~~^^^^^
+psycopg2.ProgrammingError: invalid dsn: invalid connection option "company_code"
+
+ - [app.py:134]
+2025-07-10 12:30:00,621 - ERROR - Giriş xətası: Traceback (most recent call last):
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 129, in attempt_login
+    self.show_main_app_frame()
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 149, in show_main_app_frame
+    main_frame = MainAppFrame(self.container, self.current_user, self.version_info, self.logout)
+  File "c:\Users\nesib\Desktop\mezuniyyet github\ui\main_frame.py", line 45, in __init__
+    self.create_main_layout()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\nesib\Desktop\mezuniyyet github\ui\main_frame.py", line 83, in create_main_layout
+    self.setup_left_panel()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\nesib\Desktop\mezuniyyet github\ui\main_frame.py", line 96, in setup_left_panel
+    self.delete_employee_button = ttk.Button(top_admin_frame, text="🗑 Sil", state="disabled", command=self.delete_employee)
+                                                                                                      ^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'MainAppFrame' object has no attribute 'delete_employee'
+ - [app.py:134]
+2025-07-10 12:40:50,554 - ERROR - Giriş xətası: Traceback (most recent call last):
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 137, in attempt_login
+    self.show_main_app_frame()
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 174, in show_main_app_frame
+    main_frame = MainAppFrame(self.container, self.current_user, self.version_info, self.logout)
+  File "c:\Users\nesib\Desktop\mezuniyyet github\ui\main_frame.py", line 51, in __init__
+    self.create_main_layout()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\nesib\Desktop\mezuniyyet github\ui\main_frame.py", line 85, in create_main_layout
+    self.notifications_button = ttk.Button(right_buttons_frame, text="🔔 Bildirişlər", command=self.open_notifications_window)
+                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'MainAppFrame' object has no attribute 'open_notifications_window'
+ - [app.py:142]
+2025-07-10 13:03:51,317 - WARNING - Sessiyanı bağlayarkən xəta: invalid sslmode value: ""
+ - [app.py:86]
+2025-07-10 13:03:55,344 - WARNING - Sessiyanı bağlayarkən xəta: invalid sslmode value: ""
+ - [app.py:86]
+2025-07-10 13:04:01,407 - INFO - İlkin qoşulma mümkün olmadı: invalid sslmode value: ""
+. 'setup_admin' rejimi aktivdir. - [app.py:187]
+2025-07-10 13:04:07,054 - ERROR - Giriş xətası: Traceback (most recent call last):
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 122, in attempt_login
+    user_data = database.get_user_for_login(username)
+  File "c:\Users\nesib\Desktop\mezuniyyet github\database\user_queries.py", line 11, in get_user_for_login
+    conn = db_connect()
+  File "c:\Users\nesib\Desktop\mezuniyyet github\database\connection.py", line 19, in db_connect
+    raise e
+  File "c:\Users\nesib\Desktop\mezuniyyet github\database\connection.py", line 16, in db_connect
+    return psycopg2.connect(**db_params)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\nesib\AppData\Roaming\Python\Python313\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: invalid sslmode value: ""
+
+ - [app.py:142]
+2025-07-10 13:04:14,613 - INFO - İlkin qoşulma mümkün olmadı: invalid sslmode value: ""
+. 'setup_admin' rejimi aktivdir. - [app.py:187]
+2025-07-10 13:04:22,238 - ERROR - Giriş xətası: Traceback (most recent call last):
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 122, in attempt_login
+    user_data = database.get_user_for_login(username)
+  File "c:\Users\nesib\Desktop\mezuniyyet github\database\user_queries.py", line 11, in get_user_for_login
+    conn = db_connect()
+  File "c:\Users\nesib\Desktop\mezuniyyet github\database\connection.py", line 19, in db_connect
+    raise e
+  File "c:\Users\nesib\Desktop\mezuniyyet github\database\connection.py", line 16, in db_connect
+    return psycopg2.connect(**db_params)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\nesib\AppData\Roaming\Python\Python313\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: invalid sslmode value: ""
+
+ - [app.py:142]
+2025-07-10 13:35:01,782 - ERROR - Giriş xətası: Traceback (most recent call last):
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 137, in attempt_login
+    self.show_main_app_frame()
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\nesib\Desktop\mezuniyyet github\app.py", line 174, in show_main_app_frame
+    main_frame = MainAppFrame(self.container, self.current_user, self.version_info, self.logout)
+  File "c:\Users\nesib\Desktop\mezuniyyet github\ui\main_frame.py", line 58, in __init__
+    self.load_and_refresh_data()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\nesib\Desktop\mezuniyyet github\ui\main_frame.py", line 166, in load_and_refresh_data
+    self._update_notification_button()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "c:\Users\nesib\Desktop\mezuniyyet github\ui\main_frame.py", line 294, in _update_notification_button
+    unread_count = database.get_unread_notifications_for_user(self.current_user['id'])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'database' has no attribute 'get_unread_notifications_for_user'
+ - [app.py:142]
+2025-07-10 15:11:38,284 - WARNING - İlkin qoşulma mümkün olmadı: Konfiqurasiya faylı tapılmadı.. Qurulum pəncərəsi açılır. - [app.py:101]
