@@ -1,0 +1,152 @@
+/* CreepyButton.css */
+/* Final Polish: Vibrant Blue Gradient + original Lid Animation */
+
+.creepy-btn {
+    /* Socket Background (behind the cover) - Dark Slate/Black */
+    background-color: #020617;
+    border-radius: 9999px;
+    /* Pill shape */
+    color: white;
+    cursor: pointer;
+    min-width: 140px;
+    width: 100%;
+    position: relative;
+    border: none;
+    padding: 0;
+
+    /* Font settings */
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+
+    /* Cleanup */
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    box-sizing: border-box;
+
+    z-index: 0;
+}
+
+/* The Cover (The visible button face) */
+.creepy-btn__cover {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* HERO GRADIENT: Matches the screenshot's vibrant look */
+    /* Lighter Top (#2563eb) -> Darker Bottom (#1e40af) */
+    background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+
+    /* Inner light for 3D pill effect */
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        /* Top Highlight */
+        0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    /* Drop Shadow */
+
+    padding: 14px 28px;
+    border-radius: 9999px;
+
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+
+    /* --- ANIMATION LOGIC --- */
+    transform-origin: 1.5em 50%;
+    transition:
+        transform 0.4s cubic-bezier(0.65, 0, 0.35, 1),
+        background 0.3s ease,
+        filter 0.2s ease;
+}
+
+/* Text Stylization */
+.creepy-btn__cover>* {
+    z-index: 3;
+    pointer-events: none;
+    /* Subtle text shadow for readability on gradient */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+/* Eyes Container - Bottom Right Peek */
+.creepy-btn__eyes {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    /* Slightly wider */
+
+    position: absolute;
+    right: 22px;
+    bottom: 12px;
+    height: 14px;
+
+    z-index: 1;
+    /* Behind cover */
+    pointer-events: none;
+}
+
+.creepy-btn__eye {
+    width: 16px;
+    height: 16px;
+    background-color: white;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+    /* Glow/Depth for eyes */
+
+    animation: eye-blink 4s infinite;
+    /* Slower blink */
+}
+
+.creepy-btn__pupil {
+    width: 7px;
+    height: 7px;
+    background-color: #020617;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* INTERACTION STATES */
+
+/* Hover: Lift Lid */
+.creepy-btn:hover .creepy-btn__cover {
+    transform: rotate(-12deg);
+    /* Slightly brighter on hover */
+    background: linear-gradient(180deg, #60a5fa 0%, #2563eb 100%);
+}
+
+/* Focus */
+.creepy-btn:focus-visible {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+/* Active (Click) */
+.creepy-btn:active .creepy-btn__cover {
+    transform: rotate(0);
+    filter: brightness(0.9);
+}
+
+/* Disabled */
+.creepy-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    filter: saturate(0);
+    /* Grayscale */
+}
+
+@keyframes eye-blink {
+
+    0%,
+    96%,
+    100% {
+        transform: scaleY(1);
+    }
+
+    98% {
+        transform: scaleY(0.1);
+    }
+}

@@ -1,0 +1,3 @@
+[submodule "rust-sistemi/new-api"]
+	path = rust-sistemi/new-api
+	url = https://github.com/kral14/mezuniyyet-newapi

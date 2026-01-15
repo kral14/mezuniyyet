@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Calendar Grid Test (Animated)</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background: #f4f6f8;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .cell-wrapper {
+            margin-bottom: 20px;
+        }
+
+        .cell {
+            width: 150px;
+            height: 100px;
+            border: 1px solid #ddd;
+            background: #fff;
+            display: grid;
+            overflow: hidden;
+            position: relative;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .cell:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 10px;
+            border: 0.5px solid rgba(255, 255, 255, 0.3);
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            white-space: nowrap;
+            cursor: default;
+        }
+
+        .expand-icon {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            font-size: 14px;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .cell:hover .expand-icon {
+            opacity: 1;
+        }
+
+        .expand-icon:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 6px 12px;
+            background: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #115293;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            /* Start transparent */
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+        }
+
+        /* 
+           The modal element content itself.
+           We will position this absolutely during animation, then fixed/static.
+        */
+        .modal {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+
+            /* Initial state for animation logic handled by JS */
+            position: absolute;
+            transform-origin: top left;
+            will-change: top, left, width, height, opacity;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .modal-close {
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow: auto;
+            flex: 1;
+        }
+
+        .modal-grid {
+            display: grid;
+            gap: 4px;
+            min-height: 300px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .modal-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            padding: 5px;
+            text-align: center;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            transition: transform 0.2s;
+        }
+
+        .modal-item:hover {
+            transform: scale(1.02);
+            z-index: 1;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Calendar Grid Layout Test (Animated)</h1>
+    <div class="controls">
+        <label>Number of People (N): <input type="number" id="numPeople" value="13" min="1" max="100"></label>
+        <button onclick="render()">Update</button>
+    </div>
+
+    <div id="output" class="container"></div>
+
+    <!-- Modal Container -->
+    <div id="modalOverlay" class="modal-overlay" onclick="closeModal(event)">
+        <div id="modalCard" class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">January 12, 2026</h3>
+                <span class="modal-close" onclick="closeModal(null)">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="modalContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function stringToColor(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+            return '#' + '00000'.substring(0, 6 - c.length) + c;
+        }
+
+        function render() {
+            const n = parseInt(document.getElementById('numPeople').value);
+            const output = document.getElementById('output');
+            output.innerHTML = '';
+            createCell(n, output, true);
+        }
+
+        function createCell(count, container, showLabel) {
+            const cols = Math.ceil(Math.sqrt(count));
+            const rows = Math.ceil(count / cols);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'cell-wrapper';
+
+            let label = '';
+            if (showLabel) label = `<div style="margin-bottom:5px; color:#666; font-size:12px;">Count: ${count} (${cols}x${rows})</div>`;
+
+            // Unique ID for the cell to track source for animation
+            const cellId = 'cell-' + Math.random().toString(36).substr(2, 9);
+
+            const iconHtml = `<div class="expand-icon" title="Expand View" onclick="openModal(${count}, '${cellId}')">⤢</div>`;
+
+            const gridHtml = `
+                <div id="${cellId}" class="cell" style="grid-template-columns: repeat(${cols}, 1fr); grid-template-rows: repeat(${rows}, 1fr);">
+                    ${iconHtml}
+                    ${Array.from({ length: count }).map((_, i) => {
+                const color = stringToColor('Person' + i);
+                return `<div class="item" style="background-color: ${color}">P${i + 1}</div>`
+            }).join('')}
+                </div>
+            `;
+
+            wrapper.innerHTML = label + gridHtml;
+            container.appendChild(wrapper);
+        }
+
+        let activeSourceId = null;
+
+        function openModal(count, sourceId) {
+            activeSourceId = sourceId;
+            const sourceEl = document.getElementById(sourceId);
+            const overlay = document.getElementById('modalOverlay');
+            const card = document.getElementById('modalCard');
+            const content = document.getElementById('modalContent');
+
+            // 1. Prepare Content
+            const cols = Math.ceil(Math.sqrt(count));
+            const rows = Math.ceil(count / cols);
+
+            content.innerHTML = `
+                <div class="modal-grid" style="grid-template-columns: repeat(${cols}, 1fr); grid-template-rows: repeat(${rows}, 120px);">
+                    ${Array.from({ length: count }).map((_, i) => {
+                const name = "Nazrin Ibrahimova " + (i + 1);
+                const color = stringToColor('Person' + i);
+                return `
+                            <div class="modal-item" style="background-color: ${color}">
+                                <div style="font-size: 1.5em; margin-bottom: 5px;">${name.charAt(0)}</div>
+                                <div>${name}</div>
+                                <div style="font-size: 0.8em; opacity: 0.8; margin-top: 2px;">Senior Dev</div>
+                            </div>
+                        `
+            }).join('')}
+                </div>
+            `;
+
+            // 2. Initial State (Match Source)
+            const rect = sourceEl.getBoundingClientRect();
+
+            // Show overlay but keep transparent for a frame if needed (handled by CSS transition class)
+            overlay.style.display = 'flex';
+
+            // Position card exactly over the source cell
+            card.style.transition = 'none'; // Disable transition for setup
+            card.style.top = rect.top + 'px';
+            card.style.left = rect.left + 'px';
+            card.style.width = rect.width + 'px';
+            card.style.height = rect.height + 'px';
+            card.style.opacity = '0.5';
+
+            // 3. Force Reflow
+            card.offsetHeight;
+
+            // 4. Final State (Centered Large)
+            requestAnimationFrame(() => {
+                overlay.classList.add('active'); // Darken bg
+
+                card.style.transition = 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'; // Bouncy effect
+
+                // Calculate centered position
+                const finalWidth = Math.min(600, window.innerWidth * 0.9);
+                const finalHeight = Math.min(window.innerHeight * 0.8, 600); // Or auto, but fixed for anim ease
+                const finalTop = (window.innerHeight - finalHeight) / 2;
+                const finalLeft = (window.innerWidth - finalWidth) / 2;
+
+                card.style.width = finalWidth + 'px';
+                card.style.height = finalHeight + 'px'; // Let body expand
+                // Ideally height should be auto, but transition height is tricky. 
+                // We'll fix height for demo animation or use max-height. 
+                // For smoother visual, fixed large size is best.
+                card.style.top = finalTop + 'px';
+                card.style.left = finalLeft + 'px';
+                card.style.opacity = '1';
+                card.style.borderRadius = '12px';
+            });
+        }
+
+        function closeModal(e) {
+            if (e && e.target.id !== 'modalOverlay' && e.target.className !== 'modal-close') return;
+
+            const overlay = document.getElementById('modalOverlay');
+            const card = document.getElementById('modalCard');
+            const sourceEl = document.getElementById(activeSourceId);
+
+            if (sourceEl) {
+                const rect = sourceEl.getBoundingClientRect();
+
+                // Animate back to source
+                card.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                card.style.width = rect.width + 'px';
+                card.style.height = rect.height + 'px';
+                card.style.top = rect.top + 'px';
+                card.style.left = rect.left + 'px';
+                card.style.opacity = '0.5';
+                card.style.borderRadius = '8px'; // Back to cell radius
+
+                overlay.classList.remove('active');
+
+                // Wait for transition, then hide
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    activeSourceId = null;
+                }, 300);
+            } else {
+                // Formatting fallback if source gone
+                overlay.style.display = 'none';
+            }
+        }
+
+        render();
+    </script>
+</body>
+
+</html>
